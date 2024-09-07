@@ -1,4 +1,4 @@
-        format PE GUI 4.0
+       format PE GUI 4.0
 entry start
 
 include "..\include\win32ax.inc"
@@ -10,9 +10,10 @@ include "include\SDL_events.inc"
 include "include\SDL_imports.inc"
 include "include\IMG_imports.inc"
 include "include\Cstd_headers.inc"
+include "include\RandomC.asm"
 
-include "include\modules\Graphics.inc"
-include "include\modules\Gameplay.inc"
+include "include\modules\Graphics.asm"
+include "include\modules\Gameplay.asm"
 
 section ".data" data readable writeable
 
@@ -39,7 +40,6 @@ start:
     ret
 
 proc mainloop usesdef
-    cinvoke SDL_RenderClear, [Renderer]
     .while ([Running] = $FF)
            cinvoke SDL_PollEvent, Event
            .if (eax)
@@ -49,8 +49,8 @@ proc mainloop usesdef
                .if ([Event.type] = SDL_MOUSEMOTION)
 
               .endif
+              stdcall paint
           .endif
-          stdcall paint
     .endw
     ret
 endp
@@ -62,9 +62,9 @@ section ".idata" import data readable writeable
     library \
     kernel32,"kernel32.dll",\
     user32,"user32.dll",\
-    sdl,"libs\SDL2.dll",\
-    sdl_image,"libs\SDL2_image.dll",\
-    msvcrt, "libs\msvcrt.dll"
+    sdl,"SDL2.dll",\
+    sdl_image,"SDL2_image.dll",\
+    msvcrt, "msvcrt.dll"
 
 
 
