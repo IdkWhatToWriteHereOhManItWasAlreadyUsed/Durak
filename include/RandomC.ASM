@@ -1,3 +1,4 @@
+
 RANDOM_INCREMENT = 47
 PrevRandom dw ?
 
