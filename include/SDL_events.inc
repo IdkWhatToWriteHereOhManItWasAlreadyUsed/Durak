@@ -1,14 +1,19 @@
-SDL_FIRSTEVENT = 0
+SDL_FIRSTEVENT      = 0
 
-SDL_QUIT = 0x100
+SDL_QUIT            = 0x100
 
-SDL_MOUSEMOTION = 0x400
+SDL_KEYDOWN         = 0x300
+SDL_KEYUP           = 0x301
+SDL_TEXTEDITING     = 0x302
+SDL_TEXTINPUT       = 0x303
+SDL_KEYMAPCHANGED   = 0x304
+
+SDL_TEXTEDITING_EXT = 0x305
+
+SDL_MOUSEMOTION     = 0x400
 SDL_MOUSEBUTTONDOWN = 0x401
-SDL_MOUSEBUTTONUP = 0x402
-SDL_MOUSEWHEEL = 0x403
-
-SDL_RELEASED = 0
-SDL_PRESSED = 1
+SDL_MOUSEBUTTONUP   = 0x402
+SDL_MOUSEWHEEL      = 0x403
 
 struct   PseudoEvent
     type          rd 1
@@ -16,11 +21,22 @@ struct   PseudoEvent
 ends
 
 struct   SDL_QuitEvent
-    type          rd 1
+    type               rd 1
     timestamp          rd 1
 ends
 
-struct  SDL_MouseMotionEvent
+struct SDL_KeyboardEvent
+    type      rd 1
+    timestamp rd 1
+    windowID  rd 1
+    state     rb 1
+    repeat    rb 1
+    padding2  rb 1
+    padding3  rb 1
+    keysym    SDL_Keysym
+ends
+
+struct SDL_MouseMotionEvent
     type rd 1
     timestamp rd 1
     windowID rd 1
@@ -70,7 +86,11 @@ struc   SDL_Event
         end virtual
 
         virtual
-        .quit       SDL_QuitEvent
+        .quit          SDL_QuitEvent
+        end virtual
+
+        virtual
+        .key           SDL_KeyboardEvent
         end virtual
 
         virtual
@@ -82,6 +102,6 @@ struc   SDL_Event
         end virtual
 
         virtual
-        .wheel       SDL_MouseWheelEvent
+        .wheel         SDL_MouseWheelEvent
         end virtual
 }

@@ -25,10 +25,14 @@ SDL_BlitUpper, 'SDL_BlitUpper',\
 SDL_GetWindowSurface, 'SDL_GetWindowSurface',\
 SDL_UpdateWindowSurface, 'SDL_UpdateWindowSurface',\
 SDL_FreeSurface, 'SDL_FreeSurface',\
+SDL_BlitScaled, 'SDL_BlitScaled', \
 SDL_ConvertSurface, 'SDL_ConvertSurface', \
 SDL_FillRect, 'SDL_FillRect', \
 SDL_BlitScaled, 'SDL_BlitScaled',\
 SDL_CreateTextureFromSurface, 'SDL_CreateTextureFromSurface', \
+\
+SDL_QueryTexture, 'SDL_QueryTexture', \
+SDL_DestroyTexture, 'SDL_DestroyTexture', \
 \
 SDL_MapRGB, 'SDL_MapRGB'
         
