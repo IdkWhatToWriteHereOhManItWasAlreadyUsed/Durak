@@ -3,13 +3,14 @@ Player1.cards dw 36 dup (0, 0)
 Player2.cards dw 36 dup (0, 0)
 Trump dw 1,6
 CurrPlayerMove dw 1
-Deck dw 24 dup (0,0)
 
-GameStack1 dw 28 dup (0,0)
-GameStack2 dw 28 dup (0,0)
-GameStack3 dw 28 dup (0,0)
-GameStack4 dw 28 dup (0,0)
-; раздача 5 карт
+Deck dw 0, 8, 24 dup (0,0)
+GameStack1 dw 0, 4, 28 dup (0,0)
+GameStack2 dw 0, 4, 28 dup (0,0)
+GameStack3 dw 0, 4, 28 dup (0,0)
+GameStack4 dw 0, 4, 28 dup (0,0)
 
+; первый DWORD каждого стека используется для хранения текущей
+; позиции его вершины (смещение относительно начала стека с учетом самого числа)
 
 

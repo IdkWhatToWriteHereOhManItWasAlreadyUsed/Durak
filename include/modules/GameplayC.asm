@@ -54,24 +54,51 @@ endp
 
 ;--------------------------pushCard------------------------------------------
 
-proc pushCard
-
+proc pushCard uses edi ebx ecx, stack: DWORD, card: DWORD
+        mov edi, [stack]
+        mov ebx, [edi]
+        mov ecx, [card]
+        mov [edi + ebx], ecx
+        add dword [edi], 4
         ret
 endp
 
 ;----------------------------popCard---------------------------------------
 
-proc popCard
-
+proc popCard uses esi ebx, stack: DWORD
+        mov esi, [stack]
+        mov ebx, [edi]
+        mov eax, [esi + ebx]
+        mov dword[esi + ebx], 0
+        sub dword [edi], 4
         ret
 endp
 
-;----------------------------peek-------------------------------------------
-; на вход принимает адрес стека и номер карты в стеке (не смещение в памяти!!)
-proc peek
-
+;----------------------------peekCard---------------------------------------
+; на вход принимает адрес стека и позиция в стеке (не смещение в памяти!!)
+proc peekCard uses esi ebx, stack: DWORD, pos: DWORD
+        mov esi, [stack]
+        mov ebx, [pos]
+        shl ebx, 2
+        mov eax, [esi + ebx + 4]
         ret
 endp
+
+;---------------------------clearStack--------------------------------------
+
+proc clearStack uses esi ecx ebx, stack: DWORD
+     mov esi, [stack]
+     mov ecx, [esi]
+     xor ebx, ebx
+@@:
+     mov dword[esi + ebx], 0
+     shl ebx, 4
+     cmp ebx, ecx
+     jne @b
+     ret
+endp
+
+
 
 
 
