@@ -1,18 +1,13 @@
-
-RANDOM_INCREMENT = 47
-PrevRandom dw ?
-
 proc Randomize
      rdtsc
-     mov [PrevRandom], ax
+     mov [PrevRandom], eax
      ret
 endp
-
-proc RandomWord MinVal : Word, MaxVal : Word
-     mov ax, [PrevRandom]
-     rol ax, 7
-     adc ax, RANDOM_INCREMENT
-     mov [PrevRandom], ax
+proc RandomWord uses ecx edx, MinVal : Word, MaxVal : Word
+     mov eax, [PrevRandom]
+     mul [RANDOM_MULTIPLIER]
+     add eax, RANDOM_INCREMENT
+     mov [PrevRandom], eax
 
      mov cx, [MaxVal]
      sub cx, [MinVal]
