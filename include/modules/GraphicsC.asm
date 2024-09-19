@@ -177,8 +177,8 @@ proc drawDeck
          movzx edx, [Trump + 2]
          stdcall drawCard, [TrumpCardRect.x], [TrumpCardRect.y], eax, edx
      .endif
-     .if ([OneCardLeftInDeck] <> 0)
-         cinvoke SDL_RenderCopy, [Renderer], [BackTexture], 0, Deck
+     .if ([OneCardLeftInDeck] = 0)
+         cinvoke SDL_RenderCopy, [Renderer], [BackTexture], 0, DeckRect
      .endif
      ret
 endp

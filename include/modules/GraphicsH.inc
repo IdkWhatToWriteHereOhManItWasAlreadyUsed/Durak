@@ -41,7 +41,7 @@ TrumpCard.visible db 0
 
 ; временное
 ; потом в логике заменить на значение ф-ции подсчета карт в колоде
-OneCardLeftInDeck db 1
+OneCardLeftInDeck db 0
 IsDeckEmpty db 0
 
 OtboyRect SDL_Rect
