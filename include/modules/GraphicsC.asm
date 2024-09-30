@@ -23,7 +23,8 @@ proc init usesdef
     .endif
 
     cinvoke SDL_SetRenderDrawColor, [Renderer], 12, 93, 27, 1
-
+    stdcall initImages
+    stdcall initRects
     mov [WasLaunched], 1
     ret
 endp
@@ -90,7 +91,7 @@ endp
 
 ;----------------------------------drawCard----------------------------------------------
 
-proc drawCard, x: DWORD, y: DWORD, CardType, CardNum
+proc drawCard uses ecx, x: DWORD, y: DWORD, CardType, CardNum
 
 ; 1 бубны
 ; 2 пики
@@ -161,23 +162,26 @@ endp
 ;------------------------------drawOtboy---------------------------------------------------
 
 proc drawOtboy
+        cmp byte [IsOtboyEmpty], 0
+        je @f
         mov [PlayerCardRect.x], 800 - CARD_W - DISTANCE_BETWEEN_CARDS
         mov [PlayerCardRect.y], 0
         mov [PlayerCardRect.h], CARD_H
         mov [PlayerCardRect.w], CARD_W
         cinvoke SDL_RenderCopy, [Renderer], [BackTexture], 0, OtboyRect
+        @@:
         ret
 endp
 
 ;---------------------------------drawDeck-------------------------------------------------------
 
 proc drawDeck
-     .if ([IsDeckEmpty] = 0 )
+     .if (dword [Deck] > 8)
          movzx eax, [Trump]
          movzx edx, [Trump + 2]
          stdcall drawCard, [TrumpCardRect.x], [TrumpCardRect.y], eax, edx
      .endif
-     .if ([OneCardLeftInDeck] = 0)
+     .if (dword [Deck] > 4)
          cinvoke SDL_RenderCopy, [Renderer], [BackTexture], 0, DeckRect
      .endif
      ret
@@ -210,8 +214,22 @@ endp
 
 ;--------------------------------drawPlayedCards-----------------------------------------------
 
-proc drawPlayedCards
-
+proc drawPlayedCards uses esi edi ecx
+local Card dd 0
+        lea esi, [GameStack1]
+        lea edi, [PlayedCard1]
+        mov ecx, 4
+loopstart:
+        movzx ebx, word[esi + 2]
+       ; mov eax, [esi + ebx]
+        mov eax, dword [Trump]
+        mov [Card], eax
+        stdcall drawCard, dword [edi], dword [edi + 4], dword[Card]
+        add esi, 60
+        add edi, 18
+        dec ecx
+        cmp ecx, 0
+        jne loopstart
         ret
 
 endp
@@ -226,7 +244,7 @@ proc paint, Player: Dword, Enemy: Dword
      cinvoke SDL_RenderClear, [Renderer]
      stdcall drawDeck
      stdcall drawOtboy
-
+     stdcall drawPlayedCards
 
      stdcall drawEnemyCards,[Enemy]
      stdcall drawPlayerCards, [Player]

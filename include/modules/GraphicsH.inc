@@ -23,26 +23,25 @@ Temp dd 0
 ;------------------------------------------------------------------------------
 
 PlayedCard1 SDL_Rect
-PlayedCard1.visible db 0
+PlayedCard1.visible dw 0
 
 PlayedCard2 SDL_Rect
-PlayedCard2.visible db 0
+PlayedCard2.visible dw 0
 
 PlayedCard3 SDL_Rect
-PlayedCard3.visible db 0
+PlayedCard3.visible dw 0
 
 PlayedCard4 SDL_Rect
-PlayedCard4.visible db 0
+PlayedCard4.visible dw 0
 
 TrumpCardRect SDL_Rect
-TrumpCard.visible db 0
+TrumpCard.visible dw 0
 
 ; тут что-то будет про инструкцию (ƒЋя ѕќЋ№«ќ¬ј“≈Ћя!!!), пока делать лень.
 
-; временное
-; потом в логике заменить на значение ф-ции подсчета карт в колоде
 OneCardLeftInDeck db 0
 IsDeckEmpty db 0
+IsOtboyEmpty db 0
 
 OtboyRect SDL_Rect
 DeckRect SDL_Rect

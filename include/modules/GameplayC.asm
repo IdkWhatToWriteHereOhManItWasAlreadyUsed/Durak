@@ -3,6 +3,7 @@
 
 proc giveCards uses ecx ebx eax
      mov cx, 2000
+     mov dword[Deck], 24
 @@:
      stdcall Randomize
      stdcall RandomWord, 0, 35
@@ -12,13 +13,11 @@ proc giveCards uses ecx ebx eax
      dec cx
      cmp cx, 0
      jne @b
-     ; выбираем козырь
-     ; вот это поменять
      cld
      stdcall putCards, AllCards, Player1.cards, 6
      stdcall putCards, AllCards + 24, Player2.cards, 6
-     stdcall putCards, AllCards + 48, Deck, 24
-     mov eax, dword[Deck]
+     stdcall putCards, AllCards + 48, Deck + 4, 24
+     mov eax, dword[Deck + 4]
      mov dword[Trump], eax
      ret
 endp
@@ -92,11 +91,17 @@ proc clearStack uses esi ecx ebx, stack: DWORD
      xor ebx, ebx
 @@:
      mov dword[esi + ebx], 0
-     shl ebx, 4
+     shl ebx, 2
      cmp ebx, ecx
      jne @b
+     mov dword[esi], 4
      ret
 endp
+
+
+
+
+
 
 
 

@@ -2,9 +2,10 @@ AllCards dw  1,6,1,7,1,8,1,9,1,10,1,11,1,12,1,13,1,14, 2,6,2,7,2,8,2,9,2,10,2,11
 Player1.cards dw 36 dup (0, 0)
 Player2.cards dw 36 dup (0, 0)
 Trump dw 1,6
+
 CurrPlayerMove dw 1
 
-Deck dw 0, 8, 24 dup (0,0)
+Deck dw 0, 24, 24 dup (0,0)
 GameStack1 dw 0, 4, 28 dup (0,0)
 GameStack2 dw 0, 4, 28 dup (0,0)
 GameStack3 dw 0, 4, 28 dup (0,0)

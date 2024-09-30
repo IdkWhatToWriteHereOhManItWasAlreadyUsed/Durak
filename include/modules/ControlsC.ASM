@@ -1,0 +1,3 @@
+proc  MouseMoveHandle
+      ret
+endp
