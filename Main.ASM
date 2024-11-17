@@ -1,20 +1,23 @@
-       format PE GUI 4.0
+format PE GUI 4.0
+
 entry start
 
-include "..\include\win32ax.inc"
-include "..\include\api\kernel32.inc"
-include "..\include\api\user32.inc"
+include "D:\FASM\include\win32ax.inc"
+include "D:\FASM\include\api\kernel32.inc"
+include "D:\FASM\include\api\user32.inc"
 include "include\SDL_structs.inc"
-include "include\SDL_events.inc"
 include "include\SDL_imports.inc"
 include "include\IMG_imports.inc"
 include "include\Cstd_headers.inc"
-include "include\RandomC.asm"
+
 
 section ".data" data readable writeable
 
 include "include\modules\GraphicsH.inc"
 include "include\modules\GameplayH.inc"
+include "include\RandomH.inc"
+
+
 
 WasLaunched db 0
 Running db $FF
@@ -25,13 +28,12 @@ section ".code" code readable executable
 
 include "include\modules\GraphicsC.asm"
 include "include\modules\GameplayC.asm"
+include "include\RandomC.asm"
 
 start:
     stdcall init
-    stdcall initImages
-    stdcall initRects
 
-    ; ну и имена чета, но это потом
+    ; пїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ, пїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
     cmp [WasLaunched], 0
     je .exit
     stdcall mainloop
@@ -43,32 +45,36 @@ start:
     ret
 
 proc mainloop usesdef
+
+     stdcall giveCards
     .while ([Running] <> 0)
-          ; stdcall paint
-           .if ([CurrPlayerMove] = 1)
+
+          .if ([CurrPlayerMove] = 1)
                stdcall paint, Player1.cards, Player2.cards
-               jmp @f
+               jmp EventLoop
           .endif
+
           stdcall paint, Player2.cards, Player1.cards
-          @@:
-EventLoop:
-        cinvoke SDL_Delay, 50
-           cinvoke SDL_PollEvent, Event
-           .if (eax)
+          EventLoop:
+          cinvoke SDL_Delay, 50
+          cinvoke SDL_PollEvent, Event
+          .if (eax)
+
                .if ([Event.type] = SDL_QUIT)
                    mov byte [Running], 0
-                   jmp @f
+                   jmp Endloop
                .endif
-               .if ([Event.type] = SDL_MOUSEMOTION)
-                   nop
+
+               .if ([Event.type] = SDL_MOUSEBUTTONDOWN)
+                 ;   stdcall MouseButtonDownHandle,
+
                    jmp EventLoop
                .endif
+
                jmp EventLoop
           .endif
           jmp EventLoop
-
-          @@:
-
+          Endloop:
     .endw
     ret
 endp

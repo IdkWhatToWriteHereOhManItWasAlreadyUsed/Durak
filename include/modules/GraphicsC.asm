@@ -37,6 +37,9 @@ proc initImages
      cinvoke IMG_LoadTexture, [Renderer], CardsPath
      mov [CardsTexture], eax
 
+     cinvoke IMG_LoadTexture, [Renderer], SelectionPath
+     mov [SelectionTexture], eax
+
      cinvoke IMG_LoadTexture, [Renderer], BackPath
      mov [BackTexture], eax
 
@@ -60,7 +63,7 @@ proc initRect uses ebx, Rect: DWORD, x: dword , y: dword, w: dword, h: dword
      ret
 endp
 
-;---------------------------------initRectSSSSSS-----------------------------------------------------------
+;---------------------------------initRectS-----------------------------------------------------------
 
 proc initRects usesdef
         stdcall initRect, DeckRect, 800 - DISTANCE_BETWEEN_CARDS - CARD_H, GAME_CARDS_Y -2 * DISTANCE_BETWEEN_CARDS, CARD_W, CARD_H
@@ -75,10 +78,12 @@ proc initRects usesdef
         stdcall initRect, EnemyCardRect, 0, 0, CARD_W, CARD_H
         mov [CardRect.w], CARD_W
         mov [CardRect.h], CARD_H
+        mov [selectionRect.w], CARD_W + 20
+        mov [selectionRect.h], CARD_H + 20
     ret
 endp
 
- ;----------------------------------deinit-----------------------------------------------------
+;----------------------------------deinit-----------------------------------------------------
 
 proc deinit usesdef
     cinvoke SDL_DestroyRenderer, [Renderer]
@@ -187,6 +192,23 @@ proc drawDeck
      ret
 endp
 
+;----------------------------------drawSelection-----------------------------------------------------
+
+proc drawSelection uses ecx, x: DWORD, y: DWORD
+; передавать координаты карты, которую обводим
+     .if ([IsCardSelected] = 0)
+         mov ecx, [x]
+         sub ecx, 10
+         mov [selectionRect.x], ecx
+         mov ecx, [y]
+         sub ecx, 10
+         mov [selectionRect.y], ecx
+         cinvoke SDL_RenderCopy, [Renderer], [SelectionTexture], 0, selectionRect
+
+     .endif
+     ret
+endp
+
 ;---------------------------------drawPlayerCards-----------------------------------------------------
 
 proc drawPlayerCards uses esi eax ebx edi, Player.cards: DWORD
@@ -197,6 +219,7 @@ proc drawPlayerCards uses esi eax ebx edi, Player.cards: DWORD
         movzx ebx, ax
         mov eax, DISTANCE_BETWEEN_CARDS
         .while (DWORD [esi+ebx] <> 0)
+               stdcall drawSelection, eax, WINDOW_H - DISTANCE_BETWEEN_CARDS - CARD_H
                movzx edi, word [esi + ebx + 2]
                push edi
                movzx edi, word [esi + ebx]
@@ -221,7 +244,7 @@ local Card dd 0
         mov ecx, 4
 loopstart:
         movzx ebx, word[esi + 2]
-       ; mov eax, [esi + ebx]
+
         mov eax, dword [Trump]
         mov [Card], eax
         stdcall drawCard, dword [edi], dword [edi + 4], dword[Card]
@@ -237,16 +260,14 @@ endp
 ;--------------------------------paint-----------------------------------------------
 
 proc paint, Player: Dword, Enemy: Dword
-     ; когда будешь делать отрисовку карты,
-     ; которую мышкой двигают
-     ; ее ѕќ—Ћ≈ƒЌ≈… рисовать
-    ; условие, какой игрок ходит!!!!!
+
      cinvoke SDL_RenderClear, [Renderer]
      stdcall drawDeck
      stdcall drawOtboy
      stdcall drawPlayedCards
 
      stdcall drawEnemyCards,[Enemy]
+     stdcall drawSelection, 500, 500
      stdcall drawPlayerCards, [Player]
 @@:
      cinvoke SDL_RenderPresent, [Renderer]

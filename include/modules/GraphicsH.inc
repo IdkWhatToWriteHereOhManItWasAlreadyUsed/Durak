@@ -16,8 +16,10 @@ RENDERER_FLAGS = SDL_RENDERER_ACCELERATED or SDL_RENDERER_PRESENTVSYNC
 imgFlags dd 0
 CardsPath db "images\Cards.png", 0
 BackPath db "images\Back.png", 0
+SelectionPath db "images\Selection.png", 0
 CardsTexture dd 0
 BackTexture dd 0
+SelectionTexture dd 0
 Temp dd 0
 
 ;------------------------------------------------------------------------------
@@ -42,6 +44,7 @@ TrumpCard.visible dw 0
 OneCardLeftInDeck db 0
 IsDeckEmpty db 0
 IsOtboyEmpty db 0
+IsCardSelected db 0
 
 OtboyRect SDL_Rect
 DeckRect SDL_Rect
@@ -50,3 +53,4 @@ CurrCardsPage db 0
 PlayerCardRect SDL_Rect
 CardRect SDL_Rect
 EnemyCardRect SDL_Rect
+selectionRect SDL_Rect
