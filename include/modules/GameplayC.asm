@@ -1,37 +1,36 @@
-;////////////////////////////////////////////////////////////////////
-;////////////////////////////////////////////////////////////////////
-;/////////                                                 //////////
-;/////////                Cards giveaway procedures        //////////
-;/////////                                                 //////////
-;////////////////////////////////////////////////////////////////////
-;////////////////////////////////////////////////////////////////////
+;//////////////////////////////////////////////////////////////////////
+;//////////////////////////////////////////////////////////////////////
+;/////////                                                   //////////
+;/////////                Cards giveaway procedures          //////////
+;/////////                                                   //////////
+;//////////////////////////////////////////////////////////////////////
+;//////////////////////////////////////////////////////////////////////
 
-;------------------------------giveCards-----------------------------------
+;------------------------------GiveCards-----------------------------------
 
-proc giveCards uses ecx ebx eax
+proc GiveCards uses ecx ebx eax
      mov cx, 2000
-     mov dword[Deck], 24
+     mov dword[Deck], 100
 @@:
      stdcall Randomize
      stdcall RandomWord, 0, 35
      mov bx, ax
      stdcall RandomWord, 0, 35
-     stdcall swapCards, AllCards, bx, ax
+     stdcall SwapCards, AllCards, bx, ax
      dec cx
      cmp cx, 0
      jne @b
      cld
-     stdcall putCards, AllCards, Player1.cards, 6
-     stdcall putCards, AllCards + 24, Player2.cards, 6
-     stdcall putCards, AllCards + 48, Deck + 4, 24
-     mov eax, dword[Deck + 4]
-     mov dword[Trump], eax
+     stdcall PutCards, AllCards, Player1.Cards, 6
+     stdcall PutCards, AllCards + 24, Player2.Cards, 6
+     stdcall PutCards, AllCards + 48, Deck + 4, 24
+     
      ret
 endp
 
-;-----------------------------swapCards------------------------------------
+;-----------------------------SwapCards------------------------------------
 
-proc swapCards uses esi edx edi ebx ecx, Cards: DWORD, Index1: Word
+proc SwapCards uses esi edx edi ebx ecx, Cards: DWORD, Index1: Word
      movzx esi, [Index1]
      shl esi, 2
      movzx edi, [Index1+2]
@@ -44,12 +43,12 @@ proc swapCards uses esi edx edi ebx ecx, Cards: DWORD, Index1: Word
      ret
 endp
 
-;----------------------------putCards-----------------------------------------
+;----------------------------PutCards-----------------------------------------
 
-proc putCards uses esi edi ecx eax, src: DWORD, dest: DWORD, amount: DWORD
-     mov esi, [src]
-     mov edi, [dest]
-     mov ecx, [amount]
+proc PutCards uses esi edi ecx eax, Src: DWORD, Dest: DWORD, Amount: DWORD
+     mov esi, [Src]
+     mov edi, [Dest]
+     mov ecx, [Amount]
 @@:
      movsd
      dec cx
@@ -61,47 +60,50 @@ endp
 ;////////////////////////////////////////////////////////////////////
 ;////////////////////////////////////////////////////////////////////
 ;/////////                                                 //////////
-;/////////             Common stack procedures             //////////
+;/////////             Common Stack procedures             //////////
 ;/////////                                                 //////////
 ;////////////////////////////////////////////////////////////////////
 ;////////////////////////////////////////////////////////////////////
 
-;--------------------------pushCard------------------------------------------
+;--------------------------PushCard------------------------------------------
 
-proc pushCard uses edi ebx ecx, stack: DWORD, card: DWORD
-        mov edi, [stack]
-        mov ebx, [edi]
-        mov ecx, [card]
-        mov [edi + ebx], ecx
-        add dword [edi], 4
-        ret
+proc PushCard uses edi ebx ecx, Stack: DWORD, card: DWORD
+     mov edi, [Stack]
+     mov ebx, [edi]
+     mov ecx, [card]
+     mov [edi + ebx], ecx
+     add dword [edi], 4
+     ret
 endp
 
-;----------------------------popCard---------------------------------------
+;----------------------------PopCard---------------------------------------
 
-proc popCard uses esi ebx, stack: DWORD
-        mov esi, [stack]
-        mov ebx, [edi]
-        mov eax, [esi + ebx]
-        mov dword[esi + ebx], 0
-        sub dword [edi], 4
-        ret
+proc PopCard uses esi ebx, Stack: DWORD
+     mov esi, [Stack]
+     mov ebx, [esi]
+     cmp ebx, 4
+     je @f
+     mov eax, [esi + ebx]
+     mov dword[esi + ebx], 0
+     sub dword [esi], 4
+@@:
+     ret
 endp
 
-;----------------------------peekCard---------------------------------------
-; на вход принимает адрес стека и позиция в стеке (не смещение в памяти!!)
-proc peekCard uses esi ebx, stack: DWORD, pos: DWORD
-        mov esi, [stack]
-        mov ebx, [pos]
-        shl ebx, 2
-        mov eax, [esi + ebx + 4]
-        ret
+;----------------------------PeekCard---------------------------------------
+; РЅР° РІС…РѕРґ РїСЂРёРЅРёРјР°РµС‚ Р°РґСЂРµСЃ СЃС‚РµРєР° Рё РЅРѕРјРµСЂ РєР°СЂС‚С‹ РІ СЃС‚РµРєРµ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РµРіРѕ РґРЅР° (РЅСѓРјРµСЂР°С†РёСЏ СЃ 0)
+proc PeekCard uses esi ebx, Stack: DWORD, pos: DWORD
+     mov esi, [Stack]
+     mov ebx, [pos]
+     shl ebx, 2
+     mov eax, [esi + ebx + 4]
+     ret
 endp
 
-;---------------------------clearStack--------------------------------------
+;---------------------------ClearStack--------------------------------------
 
-proc clearStack uses esi ecx ebx, stack: DWORD
-     mov esi, [stack]
+proc ClearStack uses esi ecx ebx, Stack: DWORD
+     mov esi, [Stack]
      mov ecx, [esi]
      xor ebx, ebx
 @@:
@@ -112,6 +114,23 @@ proc clearStack uses esi ecx ebx, stack: DWORD
      mov dword[esi], 4
      ret
 endp
+
+;------------------------GetStackSize----------------------------------------
+
+proc GetStackSize, Stack: DWORD
+     mov eax, [Stack]
+     mov eax, [eax]
+     sub eax, 4
+     ret
+endp
+
+;////////////////////////////////////////////////////////////////////
+;////////////////////////////////////////////////////////////////////
+;/////////                                                 //////////
+;/////////             Bla bla bla bla bla bla             //////////
+;/////////                                                 //////////
+;////////////////////////////////////////////////////////////////////
+;////////////////////////////////////////////////////////////////////
 
 
 
