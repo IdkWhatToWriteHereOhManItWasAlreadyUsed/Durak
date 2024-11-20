@@ -10,7 +10,6 @@ include "include\SDL_imports.inc"
 include "include\IMG_imports.inc"
 include "include\Cstd_headers.inc"
 
-
 section ".data" data readable writeable
 
 include "include\modules\GraphicsH.inc"
