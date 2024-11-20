@@ -1,6 +1,6 @@
 format PE GUI 4.0
 
-entry start
+entry Start
 
 include "D:\FASM\include\win32ax.inc"
 include "D:\FASM\include\api\kernel32.inc"
@@ -14,66 +14,60 @@ section ".data" data readable writeable
 
 include "include\modules\GraphicsH.inc"
 include "include\modules\GameplayH.inc"
+include "include\modules\ControlsH.inc"
 include "include\RandomH.inc"
 
 
 
 WasLaunched db 0
 Running db $FF
-align 4
+Align 4
 Event SDL_Event
 
 section ".code" code readable executable
 
 include "include\modules\GraphicsC.asm"
 include "include\modules\GameplayC.asm"
+include "include\modules\ControlsC.asm"
 include "include\RandomC.asm"
 
-start:
-    stdcall init
+Start:
+    stdcall Init
 
-    ; �� � ����� ����, �� ��� �����
+    ;добавить проверки
     cmp [WasLaunched], 0
-    je .exit
-    stdcall mainloop
+    je .Exit
+    stdcall MainLoop
 
 
-.exit:
-    stdcall deinit
+.Exit:
+    stdcall DeInit
     invoke ExitProcess, 0
     ret
 
-proc mainloop usesdef
+proc MainLoop usesdef
 
-     stdcall giveCards
+    stdcall GiveCards
     .while ([Running] <> 0)
 
-          .if ([CurrPlayerMove] = 1)
-               stdcall paint, Player1.cards, Player2.cards
-               jmp EventLoop
-          .endif
+        stdcall Paint
+        cinvoke SDL_Delay, 50
+        cinvoke SDL_PollEvent, Event
+        .if (eax)
 
-          stdcall paint, Player2.cards, Player1.cards
-          EventLoop:
-          cinvoke SDL_Delay, 50
-          cinvoke SDL_PollEvent, Event
-          .if (eax)
+            .if ([Event.type] = SDL_QUIT)
+                mov byte [Running], 0
+                jmp Endloop
+            .endif
 
-               .if ([Event.type] = SDL_QUIT)
-                   mov byte [Running], 0
-                   jmp Endloop
-               .endif
+            .if ([Event.type] = SDL_MOUSEBUTTONUP)
+                
+                jmp Endloop
+            .endif
 
-               .if ([Event.type] = SDL_MOUSEBUTTONDOWN)
-                 ;   stdcall MouseButtonDownHandle,
-
-                   jmp EventLoop
-               .endif
-
-               jmp EventLoop
-          .endif
-          jmp EventLoop
-          Endloop:
+        .endif
+        jmp Endloop
+    Endloop:
     .endw
     ret
 endp
