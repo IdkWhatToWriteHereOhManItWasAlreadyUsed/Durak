@@ -41,8 +41,6 @@ TrumpCardRect SDL_Rect
 
 ; что-то про инструкцию для пользователя
 
-OneCardLeftInDeck db 0
-IsDeckEmpty db 0
 IsOtboyEmpty db 0
 
 OtboyRect SDL_Rect

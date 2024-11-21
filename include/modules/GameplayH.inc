@@ -20,7 +20,9 @@ GameStack3 dd  4, 28 dup 0
 
 GameStack4 dd  4, 28 dup 0
 
-
+CurrAttackerCard dd 0
+AttackerSelection dd 0
+TargetSelection dd 0
 
 
 
