@@ -168,7 +168,6 @@ endp
 
 ;------------------------------DrawOtboy---------------------------------------------------
 
-
 proc DrawOtboy
     cmp byte [IsOtboyEmpty], 0
     je @f

@@ -24,7 +24,8 @@ proc GiveCards uses ecx ebx eax
      stdcall PutCards, AllCards, Player1.Cards, 6
      stdcall PutCards, AllCards + 24, Player2.Cards, 6
      stdcall PutCards, AllCards + 48, Deck + 4, 24
-     
+     stdcall PeekCard, Deck, 0
+     mov [Trump], eax
      ret
 endp
 
@@ -114,6 +115,64 @@ proc ClearStack uses esi ecx ebx, Stack: DWORD
      mov dword[esi], 4
      ret
 endp
+
+;////////////////////////////////////////////////////////////////////
+;////////////////////////////////////////////////////////////////////
+;/////////                                                 //////////
+;/////////               Other game procedures             //////////
+;/////////                                                 //////////
+;////////////////////////////////////////////////////////////////////
+;////////////////////////////////////////////////////////////////////
+
+proc CanBeat uses ebx ecx, Attacker: DWORD, Target: DWORD
+     mov eax, [Trump]
+     mov ebx, [Attacker]
+     mov ecx, [Target]
+     .if (word[Attacker] = ax)
+          .if (word[Target] = ax)
+               .if (bx > cx)
+                    mov eax, 1
+                    jmp exit
+               .endif
+               mov eax, 0
+               jmp exit
+          .endif
+          mov eax, 0
+          jmp exit
+    .endif
+    mov eax, word[Target]
+    .if (ax = word[Attacker])
+          .if (bx > cx)
+               mov eax, 1
+               jmp exit
+          .endif
+          mov eax, 0
+    .endif
+     mov eax, 0
+exit:
+     ret
+endp
+
+proc GetPlayerCardsAmount uses ecx esi, Player: DWORD
+     xor eax, eax
+     mov ecx, 35
+     mov esi, [Player]
+@@:
+     shl ecx, 2
+     .if (DWORD [esi + ecx] <> 0) 
+          inc eax 
+     .endif
+     shr ecx, 2
+     dec ecx
+     cmp ecx, 0
+     jne @b
+     ret
+endp
+
+
+
+
+
 
 
 
