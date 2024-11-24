@@ -21,7 +21,7 @@ exit:
       ret
 endp
 
-proc GetSelectedCard uses esi edi ecx, x: dword, y: dword
+proc GetSelectedCard uses esi edi ecx, Player.Cards: DWORD
       xor eax, eax
       mov esi, [Player.Cards]
       mov cl, 4*9 ; одна страница это 9 карт или 36 байт
