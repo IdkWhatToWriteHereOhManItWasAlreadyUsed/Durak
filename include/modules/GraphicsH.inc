@@ -22,8 +22,6 @@ BackTexture dd 0
 SelectionTexture dd 0
 Temp dd 0
 
-;------------------------------------------------------------------------------
-
 PlayedCard1 SDL_Rect
 
 

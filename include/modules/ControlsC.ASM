@@ -57,7 +57,6 @@ proc GetSelectedGameStack uses esi
       ret
 endp  
 
-
 ; Event.Button.x Event.Button.y
 ; click is saved in event struct
 

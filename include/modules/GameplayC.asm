@@ -101,6 +101,16 @@ proc PeekCard uses esi ebx, Stack: DWORD, pos: DWORD
      ret
 endp
 
+;----------------------------PeekTopCard---------------------------------------
+
+proc PeekTopCard uses esi ebx, Stack: DWORD
+     mov esi, [Stack]
+     mov ebx,DWORD [esi]
+     sub ebx, 8
+     shr ebx, 2
+     stdcall PeekCard, esi, ebx
+     ret
+endp
 ;---------------------------clearStack--------------------------------------
 
 proc ClearStack uses esi ecx ebx, Stack: DWORD
@@ -169,6 +179,60 @@ proc GetPlayerCardsAmount uses ecx esi, Player: DWORD
      ret
 endp
 
+
+proc HandleAttack
+     .if ([CurrPlayerMove] = 1) 
+          mov esi, Player1.Cards
+          jmp @f
+     .endif
+     mov esi, Player2.Cards
+@@:
+     .if ([GameStack1] = 4)
+          stdcall GetSelectedCard, esi
+          cmp eax, 0
+          je @f
+          mov bx, ax
+          shr eax, 16
+          stdcall PushCard, GameStack1, ax, bx
+          jmp @f   
+     .endif
+     .if ([GameStack2] = 4)
+          stdcall GetSelectedCard, esi
+          cmp eax, 0
+          je @f
+          mov bx, ax
+          shr eax, 16
+          stdcall PushCard, GameStack2, ax, bx
+          jmp @f   
+     .endif
+     .if ([GameStack3] = 4)
+          stdcall GetSelectedCard, esi
+          cmp eax, 0
+          je @f
+          mov bx, ax
+          shr eax, 16
+          stdcall PushCard, GameStack3, ax, bx
+          jmp @f   
+     .endif
+     .if ([GameStack4] = 4)
+          stdcall GetSelectedCard, esi
+          cmp eax, 0
+          je @f
+          mov bx, ax
+          shr eax, 16
+          stdcall PushCard, GameStack4, ax, bx
+          jmp @f   
+     .endif
+
+     
+@@:
+     ret
+endp
+
+proc HandleDefence
+     
+     ret
+endp
 
 
 

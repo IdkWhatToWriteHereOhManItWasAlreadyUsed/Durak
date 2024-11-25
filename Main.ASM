@@ -57,18 +57,18 @@ proc MainLoop usesdef
 
             .if ([Event.type] = SDL_QUIT)
                 mov byte [Running], 0
-                jmp Endloop
+                jmp EndLoop
             .endif
 
-               .if ([Event.type] = SDL_MOUSEBUTTONDOWN)
-                 ;   stdcall MouseButtonDownHandle,
+               .if ([Event.type] = SDL_MOUSEBUTTONUP)
+                    stdcall MouseButtonUpHandle
 
-                   jmp EventLoop
+                   jmp EndLoop
                .endif
 
         .endif
-        jmp Endloop
-    Endloop:
+        jmp EndLoop
+    EndLoop:
     .endw
     ret
 endp
