@@ -78,11 +78,12 @@ proc InitRects usesdef
     stdcall InitRect, DeckRect, 800 - DISTANCE_BETWEEN_CARDS - CARD_H, GAME_CARDS_Y -2 * DISTANCE_BETWEEN_CARDS, CARD_W, CARD_H
     stdcall InitRect, PlayerCardRect, DISTANCE_BETWEEN_CARDS, 600 - DISTANCE_BETWEEN_CARDS - CARD_H, CARD_W, CARD_H
     stdcall InitRect, TrumpCardRect, 800 - DISTANCE_BETWEEN_CARDS - CARD_H, GAME_CARDS_Y, CARD_W, CARD_H
-    stdcall InitRect, PlayedCard4, 400 + CARD_W + 10 + CARD_W + 10, GAME_CARDS_Y, CARD_W, CARD_H
-    stdcall InitRect, PlayedCard4, 400 + CARD_W + 10 + CARD_W + 10, GAME_CARDS_Y, CARD_W, CARD_H
+
     stdcall InitRect, PlayedCard1, 400 - CARD_W - CARD_W - 10, GAME_CARDS_Y ,  CARD_W, CARD_H
-    stdcall InitRect, PlayedCard2, 400 - CARD_W - 10, GAME_CARDS_Y, CARD_W, CARD_H
-    stdcall InitRect, PlayedCard3, 400 + CARD_W + 10, GAME_CARDS_Y, CARD_W, CARD_H
+    stdcall InitRect, PlayedCard2, 400 - CARD_W , GAME_CARDS_Y, CARD_W, CARD_H
+    stdcall InitRect, PlayedCard3, 400 + 10, GAME_CARDS_Y, CARD_W, CARD_H
+    stdcall InitRect, PlayedCard4, 400 + CARD_W + 20, GAME_CARDS_Y, CARD_W, CARD_H
+
     stdcall InitRect, OtboyRect, DISTANCE_BETWEEN_CARDS, GAME_CARDS_Y, CARD_W, CARD_H
     stdcall InitRect, EnemyCardRect, 0, 0, CARD_W, CARD_H
     mov [CardRect.w], CARD_W
@@ -217,7 +218,7 @@ proc DrawPlayerCards uses esi eax ebx edi, Player.Cards: DWORD
     mul byte [CurrCardsPage]
     movzx ebx, ax
     mov eax, DISTANCE_BETWEEN_CARDS
-
+ 
     .while (DWORD [esi+ebx] <> 0)
 
         movzx edi, word [esi + ebx + 2]
@@ -242,25 +243,25 @@ endp
 proc DrawPlayedCards uses esi ebx
 
     mov esi, PlayedCard1
-    stdcall PeekCard, GameStack1, 0
+    stdcall PeekTopCard, GameStack1
     movzx ebx, ax
     shr eax, 16
     stdcall DrawCard,  dword [esi], dword [esi + 4], ebx, eax
 
     mov esi, PlayedCard2
-    stdcall PeekCard, GameStack2, 0
+    stdcall PeekTopCard, GameStack2
     movzx ebx, ax
     shr eax, 16
     stdcall DrawCard,  dword [esi], dword [esi + 4], ebx, eax
 
     mov esi, PlayedCard3
-    stdcall PeekCard, GameStack3, 0
+    stdcall PeekTopCard, GameStack3
     movzx ebx, ax
     shr eax, 16
     stdcall DrawCard,  dword [esi], dword [esi + 4], ebx, eax
 
     mov esi, PlayedCard4
-    stdcall PeekCard, GameStack4, 0
+    stdcall PeekTopCard, GameStack4
     movzx ebx, ax
     shr eax, 16
     stdcall DrawCard,  dword [esi], dword [esi + 4], ebx, eax
