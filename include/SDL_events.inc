@@ -42,10 +42,10 @@ struct SDL_MouseMotionEvent
     windowID rd 1
     which rd 1
     state rd 1
-    x rd 1 ; текущая координата
-    y rd 1 ;
-    xrel rd 1 ; скорость перемещения по х
-    yrel rd 1 ; скорость перемещения по y
+    x rd 1 
+    y rd 1 
+    xrel rd 1
+    yrel rd 1 
 ends
 
 struct SDL_MouseButtonEvent
@@ -54,8 +54,8 @@ struct SDL_MouseButtonEvent
     windowID rd 1
     which rd 1
     button rb 1
-    state rb 1;Нажат или опущен ;Здесь константы SDL_PRESSED или SDL_RELEASED, но я их не нашёл. Сам вставишь куда-нибудь их определения
-    clicks rb 1;Дабл или сингл клик
+    state rb 1
+    clicks rb 1
     padding1 rb 1
     x rd 1
     y rd 1
