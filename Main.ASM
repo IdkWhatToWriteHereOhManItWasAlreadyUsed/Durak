@@ -60,10 +60,11 @@ proc MainLoop usesdef
                 jmp Endloop
             .endif
 
-            .if ([Event.type] = SDL_MOUSEBUTTONUP)
-                stdcall MouseButtonUpHandle
-                jmp Endloop
-            .endif
+               .if ([Event.type] = SDL_MOUSEBUTTONDOWN)
+                 ;   stdcall MouseButtonDownHandle,
+
+                   jmp EventLoop
+               .endif
 
         .endif
         jmp Endloop
