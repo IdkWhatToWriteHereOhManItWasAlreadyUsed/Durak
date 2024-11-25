@@ -53,7 +53,7 @@ endp
 
 proc GetSelectedGameStack uses esi
       mov esi, [PlayedCard1]
-    
+      
       ret
 endp  
 

@@ -179,6 +179,34 @@ proc GetPlayerCardsAmount uses ecx esi, Player: DWORD
      ret
 endp
 
+proc CanPush uses ebx esi, Card: DWORD
+     ret
+endp
+
+proc CheckAndPush uses esi edi, GameStackAddress: DWORD, Player.Cards: DWORD
+; returns 0 in eax if not pushed. 1 if pushed
+     mov esi, [GameStackAddress]
+     mov edi, [Player.Cards]
+     mov eax, [esi]
+     shr eax, 2
+     test eax, 1h
+     jz @f
+
+     stdcall GetSelectedCard, edi
+     cmp eax, 0
+     je @f
+
+     stdcall CanPush, eax  
+     cmp eax, 0
+     je @f
+
+     mov bx, ax
+     shr eax, 16
+     stdcall PushCard, esi, ax, bx 
+     mov eax, 1 
+@@:
+     ret
+endp
 
 proc HandleAttack
      .if ([CurrPlayerMove] = 1) 
@@ -187,45 +215,32 @@ proc HandleAttack
      .endif
      mov esi, Player2.Cards
 @@:
-     .if ([GameStack1] = 4)
-          stdcall GetSelectedCard, esi
-          cmp eax, 0
-          je @f
-          mov bx, ax
-          shr eax, 16
-          stdcall PushCard, GameStack1, ax, bx
-          jmp @f   
+     stdcall CheckAndPush, GameStack1, esi
+     .if (eax = 0)
+          stdcall CheckAndPush, GameStack2, esi         
      .endif
-     .if ([GameStack2] = 4)
-          stdcall GetSelectedCard, esi
-          cmp eax, 0
-          je @f
-          mov bx, ax
-          shr eax, 16
-          stdcall PushCard, GameStack2, ax, bx
-          jmp @f   
+     .if (eax = 0)
+          stdcall CheckAndPush, GameStack3, esi         
      .endif
-     .if ([GameStack3] = 4)
-          stdcall GetSelectedCard, esi
-          cmp eax, 0
-          je @f
-          mov bx, ax
-          shr eax, 16
-          stdcall PushCard, GameStack3, ax, bx
-          jmp @f   
+     .if (eax = 0)
+          stdcall CheckAndPush, GameStack4, esi         
      .endif
-     .if ([GameStack4] = 4)
-          stdcall GetSelectedCard, esi
-          cmp eax, 0
-          je @f
-          mov bx, ax
-          shr eax, 16
-          stdcall PushCard, GameStack4, ax, bx
-          jmp @f   
-     .endif
+   
+    ; mov eax, [GameStack1]
+    ; shr eax, 2
+    ; test eax, 1h
+   ;  jnz @f
+    ; stdcall GetSelectedCard, esi, edi
+    ; cmp eax, 0
+    ; je @f
+   ;  mov bx, ax
+   ;  shr eax, 16
+    ; stdcall PushCard, GameStack1, ax, bx
+    ; jmp @f   
+   ; @@:
 
-     
-@@:
+
+
      ret
 endp
 
