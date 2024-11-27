@@ -2,9 +2,9 @@ AllCards dw  1,6,1,7,1,8,1,9,1,10,1,11,1,12,1,13,1,14,2,6,2,7,2,8,2,9,2,10,2,11,
 
 Trump dd 0
 Align 4
-Player1.Cards dd 36 dup 0
+Player1Cards dd 36 dup 0
 
-Player2.Cards dd 36 dup 0
+Player2Cards dd 36 dup 0
 
 CurrPlayerMove dw 1
 CurrPlayerAttacker dw 1

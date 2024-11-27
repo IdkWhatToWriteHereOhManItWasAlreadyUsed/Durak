@@ -285,10 +285,10 @@ endp
 
 proc Paint
     .if ([CurrPlayerMove] = 1)
-            stdcall DrawScreen, Player1.Cards, Player2.Cards
+            stdcall DrawScreen, Player1Cards, Player2Cards
             jmp @f
         .endif
-        stdcall DrawScreen, Player2.Cards, Player1.Cards
+        stdcall DrawScreen, Player2Cards, Player1Cards
 @@: 
     ret
 endp

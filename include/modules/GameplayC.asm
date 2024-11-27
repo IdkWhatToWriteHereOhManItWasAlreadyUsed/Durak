@@ -21,8 +21,8 @@ proc GiveCards uses ecx ebx eax
      cmp cx, 0
      jne @b
      cld
-     stdcall PutCards, AllCards, Player1.Cards, 6
-     stdcall PutCards, AllCards + 24, Player2.Cards, 6
+     stdcall PutCards, AllCards, Player1Cards, 6
+     stdcall PutCards, AllCards + 24, Player2Cards, 6
      stdcall PutCards, AllCards + 48, Deck + 4, 24
      stdcall PeekCard, Deck, 0
      mov [Trump], eax
@@ -123,6 +123,42 @@ proc ClearStack uses esi ecx ebx, Stack: DWORD
      cmp ebx, ecx
      jne @b
      mov dword[esi], 4
+     ret
+endp
+
+;////////////////////////////////////////////////////////////////////
+;////////////////////////////////////////////////////////////////////
+;//////                                                        //////
+;//////   Proc for giving and taking away cards during game    //////
+;//////                                                        //////
+;////////////////////////////////////////////////////////////////////
+;////////////////////////////////////////////////////////////////////
+
+proc GiveCard uses edi ebx, PlayerCards: DWORD, Card: DWORD
+     mov edi, [PlayerCards]
+     mov eax, [Card]
+     xor ebx, ebx
+     .while (Dword[edi + ebx] = 0)
+          add ebx, 4
+     .endw
+     mov Dword[edi + ebx], eax
+     ret
+endp
+
+proc TakeCard uses esi ebx, Player: DWORD, Card: DWORD
+     mov esi, [PlayerCards]
+     mov eax, [Card]
+     xor ebx, ebx
+     .while (Dword[esi + ebx] <> eax)
+          add ebx, 4
+     .endw
+     mov Dword[edi + ebx], 0
+     ; сдвиг всех остальных карт
+     .while (Dword[esi + ebx] <> 0)
+          mov eax, Dword[esi + ebx + 4] 
+          mov Dword[edi + ebx], eax
+          add ebx, 4
+     .endw
      ret
 endp
 
@@ -273,11 +309,11 @@ ex:
      ret
 endp
 
-proc CheckAndPush uses esi edi, GameStackAddress: DWORD, Player.Cards: DWORD
+proc CheckAndPush uses esi edi, GameStackAddress: DWORD, PlayerCards: DWORD
 ; returns 0 in eax if not pushed. 1 if pushed
 local Card: DWORD
      mov esi, [GameStackAddress]
-     mov edi, [Player.Cards]
+     mov edi, [PlayerCards]
      mov eax, [esi]
      shr eax, 2
      dec eax
@@ -310,10 +346,10 @@ endp
 
 proc HandleAttack
      .if ([CurrPlayerMove] = 1) 
-          mov esi, Player1.Cards
+          mov esi, Player1Cards
           jmp @f
      .endif
-     mov esi, Player2.Cards
+     mov esi, Player2Cards
 @@:
      stdcall CheckAndPush, GameStack1, esi
      .if (eax = 0)
