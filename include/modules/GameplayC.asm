@@ -93,7 +93,7 @@ endp
 
 ;----------------------------PeekCard---------------------------------------
 ; на вход принимает адрес стека и номер карты в стеке относительно его дна (нумерация с 0)
-proc PeekCard uses esi ebx, Stack: DWORD, pos: DWORD
+proc PeekCard uses esi ecx ebx, Stack: DWORD, pos: DWORD
      mov esi, [Stack]
      mov ebx, [pos]
      shl ebx, 2
@@ -179,32 +179,132 @@ proc GetPlayerCardsAmount uses ecx esi, Player: DWORD
      ret
 endp
 
-proc CanPush uses ebx esi, Card: DWORD
+proc CanPush uses ecx esi ebx, Card: DWORD
+     mov ecx, [Card]
+
+     mov esi, GameStack1 
+     mov ebx, [esi]
+     cmp ebx, 4
+     je HasEmptyStackOrCanPush
+     shr ebx, 2 
+     dec ebx 
+     .while(ebx <> 0)
+          dec ebx
+          stdcall PeekCard, esi, ebx
+          push ebx
+          mov ebx, eax
+          shl eax, 16
+          shr ebx, 16
+          mov ax, bx
+          pop ebx
+          .if(cx = ax)
+               jmp HasEmptyStackOrCanPush
+          .endif    
+     .endw
+
+     mov esi, GameStack2 
+     mov ebx, [esi]
+     shr ebx, 2
+     cmp ebx, 1
+     je @f
+     dec ebx
+
+     .while(ebx <> 0)
+          dec ebx
+          stdcall PeekCard, esi, ebx
+          push ebx
+          mov ebx, eax
+          shl eax, 16
+          shr ebx, 16
+          mov ax, bx
+          pop ebx
+         .if(cx = ax)
+               jmp HasEmptyStackOrCanPush
+          .endif    
+     .endw
+@@:
+     mov esi, GameStack3 
+     mov ebx, [esi]
+     shr ebx, 2
+     cmp ebx, 1
+     je @f
+     dec ebx
+
+     .while(ebx <> 0)
+          dec ebx
+          stdcall PeekCard, esi, ebx
+          push ebx
+          mov ebx, eax
+          shl eax, 16
+          shr ebx, 16
+          mov ax, bx
+          pop ebx
+          .if(cx = ax)
+               jmp HasEmptyStackOrCanPush
+          .endif      
+     .endw
+@@:
+     mov esi, GameStack4 
+     mov ebx, [esi]
+     shr ebx, 2
+     cmp ebx, 1
+     je @f
+     dec ebx
+
+     .while(ebx <> 0)
+          dec ebx
+          stdcall PeekCard, esi, ebx
+          push ebx
+          mov ebx, eax
+          shl eax, 16
+          shr ebx, 16
+          mov ax, bx
+          pop ebx
+          .if(cx = ax)
+               jmp HasEmptyStackOrCanPush
+          .endif   
+     .endw
+@@:
+     xor eax, eax
+     jmp ex
+HasEmptyStackOrCanPush:
+     mov eax, 1
+ex:
      ret
 endp
 
 proc CheckAndPush uses esi edi, GameStackAddress: DWORD, Player.Cards: DWORD
 ; returns 0 in eax if not pushed. 1 if pushed
+local Card: DWORD
      mov esi, [GameStackAddress]
      mov edi, [Player.Cards]
      mov eax, [esi]
      shr eax, 2
+     dec eax
      test eax, 1h
-     jz @f
+     jnz @f
 
      stdcall GetSelectedCard, edi
      cmp eax, 0
      je @f
+     
+     mov DWORD [Card], eax
 
      stdcall CanPush, eax  
      cmp eax, 0
      je @f
 
-     mov bx, ax
-     shr eax, 16
-     stdcall PushCard, esi, ax, bx 
+     mov ebx,  DWORD [Card]
+     mov eax,  DWORD [Card]
+     shr ebx, 16
+     shl eax, 16
+     mov ax, bx
+     stdcall PushCard, esi, eax
      mov eax, 1 
+     ret
+     ; ай ай ай неструктурное программирование
 @@:
+     xor eax, eax
      ret
 endp
 
@@ -226,21 +326,6 @@ proc HandleAttack
           stdcall CheckAndPush, GameStack4, esi         
      .endif
    
-    ; mov eax, [GameStack1]
-    ; shr eax, 2
-    ; test eax, 1h
-   ;  jnz @f
-    ; stdcall GetSelectedCard, esi, edi
-    ; cmp eax, 0
-    ; je @f
-   ;  mov bx, ax
-   ;  shr eax, 16
-    ; stdcall PushCard, GameStack1, ax, bx
-    ; jmp @f   
-   ; @@:
-
-
-
      ret
 endp
 
