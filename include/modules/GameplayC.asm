@@ -145,18 +145,16 @@ proc GiveCard uses edi ebx, PlayerCards: DWORD, Card: DWORD
      ret
 endp
 
-proc TakeCard uses esi ebx, Player: DWORD, Card: DWORD
+proc TakeCard uses esi ebx ecx, PlayerCards: DWORD, Card: DWORD
      mov esi, [PlayerCards]
      mov eax, [Card]
      xor ebx, ebx
      .while (Dword[esi + ebx] <> eax)
           add ebx, 4
      .endw
-     mov Dword[edi + ebx], 0
-     ; сдвиг всех остальных карт
      .while (Dword[esi + ebx] <> 0)
-          mov eax, Dword[esi + ebx + 4] 
-          mov Dword[edi + ebx], eax
+          mov eax, Dword [esi + ebx + 4] 
+          mov Dword[esi + ebx], eax
           add ebx, 4
      .endw
      ret
@@ -336,6 +334,7 @@ local Card: DWORD
      shl eax, 16
      mov ax, bx
      stdcall PushCard, esi, eax
+     stdcall TakeCard, DWORD [PlayerCards], eax
      mov eax, 1 
      ret
      ; ай ай ай неструктурное программирование
@@ -361,8 +360,6 @@ proc HandleAttack
      .if (eax = 0)
           stdcall CheckAndPush, GameStack4, esi         
      .endif
-   
-     ret
 endp
 
 proc HandleDefence

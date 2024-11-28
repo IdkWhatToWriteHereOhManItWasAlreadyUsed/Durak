@@ -1,5 +1,6 @@
 Window dd 0
 WINDOW_TITLE db 'Durak', 0
+align 4
 WINDOW_W = 800
 WINDOW_H = 600
 WINDOW_X = 100
@@ -40,10 +41,12 @@ TrumpCardRect SDL_Rect
 ; что-то про инструкцию для пользователя
 
 IsOtboyEmpty db 0
+align 4
 
 OtboyRect SDL_Rect
 DeckRect SDL_Rect
 CurrCardsPage db 0
+align 4
 
 PlayerCardRect SDL_Rect
 CardRect SDL_Rect
