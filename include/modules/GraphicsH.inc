@@ -18,9 +18,11 @@ imgFlags dd 0
 CardsPath db "images\Cards.png", 0
 BackPath db "images\Back.png", 0
 SelectionPath db "images\Selection.png", 0
+MoveTransferButtonPath db "images\MoveTransferButton.png", 0
 CardsTexture dd 0
 BackTexture dd 0
 SelectionTexture dd 0
+MoveTransferButtonTexture dd 0
 Temp dd 0
 
 PlayedCard1 SDL_Rect
@@ -47,8 +49,8 @@ OtboyRect SDL_Rect
 DeckRect SDL_Rect
 CurrCardsPage db 0
 align 4
-
 PlayerCardRect SDL_Rect
 CardRect SDL_Rect
 EnemyCardRect SDL_Rect
 SelectionRect SDL_Rect
+MoveTransferButtonRect SDL_Rect

@@ -54,6 +54,9 @@ proc InitImages
     cinvoke IMG_LoadTexture, [Renderer], BackPath
     mov [BackTexture], eax
 
+    cinvoke IMG_LoadTexture, [Renderer], MoveTransferButtonPath
+    mov [MoveTransferButtonTexture], eax
+
     ret
 endp
 
@@ -86,6 +89,8 @@ proc InitRects usesdef
 
     stdcall InitRect, OtboyRect, DISTANCE_BETWEEN_CARDS, GAME_CARDS_Y, CARD_W, CARD_H
     stdcall InitRect, EnemyCardRect, 0, 0, CARD_W, CARD_H
+    stdcall InitRect, MoveTransferButtonRect, 300, 350, 200, 40
+
     mov [CardRect.w], CARD_W
     mov [CardRect.h], CARD_H
     mov [SelectionRect.w], CARD_W + 20
@@ -268,6 +273,11 @@ proc DrawPlayedCards uses esi ebx
     ret
 endp
 
+proc DrawButtons
+    cinvoke SDL_RenderCopy, [Renderer], [MoveTransferButtonTexture], 0, MoveTransferButtonRect
+    ret
+endp
+
 ;--------------------------------DrawScreen-----------------------------------------------
 
 proc DrawScreen, Player: Dword, Enemy: Dword
@@ -278,6 +288,7 @@ proc DrawScreen, Player: Dword, Enemy: Dword
     stdcall DrawPlayedCards
     stdcall DrawEnemyCards,[Enemy]
     stdcall DrawPlayerCards, [Player]
+    stdcall DrawButtons
 @@:
     cinvoke SDL_RenderPresent, [Renderer]
     ret
