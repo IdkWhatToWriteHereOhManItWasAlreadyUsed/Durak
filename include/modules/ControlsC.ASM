@@ -51,6 +51,53 @@ proc GetSelectedCard uses esi edi ecx, Player.Cards: DWORD
     ret
 endp
 
+proc IsClickedMoveTransferButton uses ebx
+      xor eax, eax
+      mov ebx, [Event.button.y]
+      .if (ebx > [MoveTransferButtonRect.y])
+            sub ebx, 40
+            .if (ebx < [MoveTransferButtonRect.y])
+                  mov ebx, [Event.button.x]
+                  .if (ebx > [MoveTransferButtonRect.x])
+                        sub ebx, 120
+                        .if (ebx < [MoveTransferButtonRect.x])
+                              .if (word[IsShownMoveTransferButton] = 1)
+                                    mov eax, 1
+                                    jmp @f
+                              .endif
+                        .endif
+                  .endif
+            .endif
+      .endif
+@@:
+      ret
+endp
+
+proc IsClickedOtboyButton uses ebx
+      xor eax, eax
+      mov ebx, [Event.button.y]
+      .if (ebx > [OtboyButtonRect.y])
+            sub ebx, 40
+            .if (ebx < [MoveTransferButtonRect.y])
+                  mov ebx, [Event.button.x]
+                  .if (ebx > [MoveTransferButtonRect.x])
+                        sub ebx, 120
+                        .if (ebx < [MoveTransferButtonRect.x])
+                              .if (word[IsShownMoveTransferButton] = 1)
+                                    mov eax, 1
+                                    jmp @f
+                              .endif
+                        .endif
+                  .endif
+            .endif
+      .endif
+@@:
+      ret
+endp
+
+
+
+
 proc GetSelectedGameStack uses esi
       mov esi, [PlayedCard1]
       

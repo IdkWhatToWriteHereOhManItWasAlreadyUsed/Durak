@@ -19,11 +19,16 @@ CardsPath db "images\Cards.png", 0
 BackPath db "images\Back.png", 0
 SelectionPath db "images\Selection.png", 0
 MoveTransferButtonPath db "images\MoveTransferButton.png", 0
+GrabButtonPath db "images\GrabButton.png", 0
+OtboyButtonPath db "images\OtboyButton.png", 0
 CardsTexture dd 0
 BackTexture dd 0
 SelectionTexture dd 0
 MoveTransferButtonTexture dd 0
+OtboyButtonTexture dd 0
+GrabButtonTexture dd 0
 Temp dd 0
+
 
 PlayedCard1 SDL_Rect
 
@@ -43,6 +48,9 @@ TrumpCardRect SDL_Rect
 ; что-то про инструкцию для пользователя
 
 IsOtboyEmpty db 0
+IsShownMoveTransferButton dw 0
+IsShownGrabButton dw 0
+IsShownOtboyButton dw 0
 align 4
 
 OtboyRect SDL_Rect
@@ -54,3 +62,6 @@ CardRect SDL_Rect
 EnemyCardRect SDL_Rect
 SelectionRect SDL_Rect
 MoveTransferButtonRect SDL_Rect
+GrabButtonRect SDL_Rect
+OtboyButtonRect SDL_Rect
+

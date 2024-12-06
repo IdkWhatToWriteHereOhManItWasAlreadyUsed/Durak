@@ -344,6 +344,11 @@ local Card: DWORD
 endp
 
 proc HandleAttack
+     mov byte [IsShownGrabButton], 0 
+     mov byte [IsShownOtboyButton], 0 
+     .if (Dword [GameStack1] > 8)
+          mov byte [IsShownOtboyButton], 1 
+     .endif
      .if ([CurrPlayerMove] = 1) 
           mov esi, Player1Cards
           jmp @f
@@ -352,7 +357,7 @@ proc HandleAttack
 @@:
      stdcall CheckAndPush, GameStack1, esi
      .if (eax = 0)
-          stdcall CheckAndPush, GameStack2, esi         
+          stdcall CheckAndPush, GameStack2, esi     
      .endif
      .if (eax = 0)
           stdcall CheckAndPush, GameStack3, esi         
@@ -360,10 +365,61 @@ proc HandleAttack
      .if (eax = 0)
           stdcall CheckAndPush, GameStack4, esi         
      .endif
+
+     .if (eax <> 0)
+         ; mov byte [IsShownGrabButton], 0
+          mov byte [IsShownMoveTransferButton], 1
+     .endif
+
+     stdcall IsClickedMoveTransferButton
+     .if (eax)
+          mov ax, [CurrPlayerAttacker]
+          .if ( ax =  word [CurrPlayerMove])
+               mov byte [IsShownGrabButton], 1
+          .endif
+          .if (ax = 1)
+               mov word [CurrPlayerMove], 2
+               jmp @f
+          .endif
+          mov word [CurrPlayerMove], 1
+          jmp @f
+    
+     .endif
+
+     stdcall IsClickedOtboyButton
+     .if (eax)
+          mov ax, [CurrPlayerAttacker]
+          .if (ax = 1)
+               mov word [CurrPlayerMove], 2
+               jmp @f
+          .endif
+          mov word [CurrPlayerMove], 1
+          jmp @f
+     .endif
+@@:
+     ret
+endp
+
+proc AllCardsBeaten
+     mov eax, [GameStack1]
+     shr eax, 3
+     .if ()
+     .endif
+     xor eax, eax
+@@
+     ret
 endp
 
 proc HandleDefence
+     .if ([CurrPlayerMove] = 1) 
+          mov esi, Player1Cards
+          jmp @f
+     .endif
+     mov esi, Player2Cards
+     ; выбираем стек бла бла бла
      
+@@:
+     mov byte [IsShownGrabButton], 1
      ret
 endp
 

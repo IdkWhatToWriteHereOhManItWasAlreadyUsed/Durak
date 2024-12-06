@@ -57,6 +57,12 @@ proc InitImages
     cinvoke IMG_LoadTexture, [Renderer], MoveTransferButtonPath
     mov [MoveTransferButtonTexture], eax
 
+    cinvoke IMG_LoadTexture, [Renderer], GrabButtonPath
+    mov [GrabButtonTexture], eax
+
+    cinvoke IMG_LoadTexture, [Renderer], OtboyButtonPath
+    mov [OtboyButtonTexture], eax
+
     ret
 endp
 
@@ -90,6 +96,9 @@ proc InitRects usesdef
     stdcall InitRect, OtboyRect, DISTANCE_BETWEEN_CARDS, GAME_CARDS_Y, CARD_W, CARD_H
     stdcall InitRect, EnemyCardRect, 0, 0, CARD_W, CARD_H
     stdcall InitRect, MoveTransferButtonRect, 300, 350, 200, 40
+    stdcall InitRect, GrabButtonRect, 600, 350, 120, 40
+    stdcall InitRect, OtboyButtonRect, DISTANCE_BETWEEN_CARDS - 5, 350, 120, 40
+
 
     mov [CardRect.w], CARD_W
     mov [CardRect.h], CARD_H
@@ -273,8 +282,16 @@ proc DrawPlayedCards uses esi ebx
     ret
 endp
 
+;--------------------------------DrawButtons-----------------------------------------------
+
 proc DrawButtons
-    cinvoke SDL_RenderCopy, [Renderer], [MoveTransferButtonTexture], 0, MoveTransferButtonRect
+    .if (word [IsShownMoveTransferButton] <> 0)
+        cinvoke SDL_RenderCopy, [Renderer], [MoveTransferButtonTexture], 0, MoveTransferButtonRect
+    .endif
+
+    .if (word [IsShownGrabButton] <> 0)
+        cinvoke SDL_RenderCopy, [Renderer], [GrabButtonTexture], 0, GrabButtonRect
+    .endif
     ret
 endp
 
@@ -293,6 +310,8 @@ proc DrawScreen, Player: Dword, Enemy: Dword
     cinvoke SDL_RenderPresent, [Renderer]
     ret
 endp
+
+;-----------------------------------Paint-----------------------------------------------
 
 proc Paint
     .if ([CurrPlayerMove] = 1)
