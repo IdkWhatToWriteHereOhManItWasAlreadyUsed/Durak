@@ -8,7 +8,7 @@ proc IsClickInRect uses ebx edx, x: dword, y: dword
                   jmp @f
             .endif
       .endif
-      jmp exit
+      jmp ext
 @@:
       mov ebx, [y]
       .if (ebx < [Event.button.y])
@@ -17,12 +17,11 @@ proc IsClickInRect uses ebx edx, x: dword, y: dword
                   mov eax, 1
             .endif
       .endif
-exit:
+ext:
       ret
 endp
 
-proc GetSelectedCard uses esi edi ecx, Player.Cards: DWORD
-    
+proc GetSelectedCard uses esi edi ecx, Player.Cards: DWORD   
       mov esi, [Player.Cards]
       mov al, 4*9 ; одна страница это 9 карт или 36 байт
       mul byte [CurrCardsPage]
@@ -95,13 +94,24 @@ proc IsClickedOtboyButton uses ebx
       ret
 endp
 
-
-
-
-proc GetSelectedGameStack uses esi
-      mov esi, [PlayedCard1]
-      
-      ret
+proc GetSelectedGameStack uses esi ecx
+local count dd 0  
+      mov esi, GameStack1
+      mov ecx,  400 - CARD_W - CARD_W - DISTANCE_BETWEEN_CARDS
+@@:
+      stdcall IsClickInRect, ecx, GAME_CARDS_Y
+      .if (eax)
+            mov eax, esi
+           jmp @f
+      .endif
+      add ecx, DISTANCE_BETWEEN_CARDS + CARD_W
+      add esi, 29*4
+      inc dword [count]
+      cmp dword [count], 4
+      jne @b 
+      xor eax, eax
+@@:
+    ret
 endp  
 
 ; Event.Button.x Event.Button.y

@@ -88,10 +88,10 @@ proc InitRects usesdef
     stdcall InitRect, PlayerCardRect, DISTANCE_BETWEEN_CARDS, 600 - DISTANCE_BETWEEN_CARDS - CARD_H, CARD_W, CARD_H
     stdcall InitRect, TrumpCardRect, 800 - DISTANCE_BETWEEN_CARDS - CARD_H, GAME_CARDS_Y, CARD_W, CARD_H
 
-    stdcall InitRect, PlayedCard1, 400 - CARD_W - CARD_W - 10, GAME_CARDS_Y ,  CARD_W, CARD_H
+    stdcall InitRect, PlayedCard1, 400 - CARD_W - CARD_W - DISTANCE_BETWEEN_CARDS, GAME_CARDS_Y ,  CARD_W, CARD_H
     stdcall InitRect, PlayedCard2, 400 - CARD_W , GAME_CARDS_Y, CARD_W, CARD_H
-    stdcall InitRect, PlayedCard3, 400 + 10, GAME_CARDS_Y, CARD_W, CARD_H
-    stdcall InitRect, PlayedCard4, 400 + CARD_W + 20, GAME_CARDS_Y, CARD_W, CARD_H
+    stdcall InitRect, PlayedCard3, 400 + DISTANCE_BETWEEN_CARDS, GAME_CARDS_Y, CARD_W, CARD_H
+    stdcall InitRect, PlayedCard4, 400 + CARD_W + DISTANCE_BETWEEN_CARDS *2, GAME_CARDS_Y, CARD_W, CARD_H
 
     stdcall InitRect, OtboyRect, DISTANCE_BETWEEN_CARDS, GAME_CARDS_Y, CARD_W, CARD_H
     stdcall InitRect, EnemyCardRect, 0, 0, CARD_W, CARD_H

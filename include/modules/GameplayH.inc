@@ -8,6 +8,8 @@ Player2Cards dd 36 dup 0
 
 CurrPlayerMove dw 1
 CurrPlayerAttacker dw 1
+SelectingAttacker dw 1
+SelectedCard dd 0
 Align 4
 
 Deck dd  4, 24 dup 0
@@ -19,10 +21,6 @@ GameStack2 dd  4, 28 dup 0
 GameStack3 dd  4, 28 dup 0
 
 GameStack4 dd  4, 28 dup 0
-
-CurrAttackerCard dd 0
-AttackerSelection dd 0
-TargetSelection dd 0
 
 
 
