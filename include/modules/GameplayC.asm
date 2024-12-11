@@ -111,7 +111,7 @@ proc PeekTopCard uses esi ebx, Stack: DWORD
      stdcall PeekCard, esi, ebx
      ret
 endp
-;---------------------------clearStack--------------------------------------
+;---------------------------ClearStack--------------------------------------
 
 proc ClearStack uses esi ecx ebx, Stack: DWORD
      mov esi, [Stack]
@@ -119,7 +119,7 @@ proc ClearStack uses esi ecx ebx, Stack: DWORD
      xor ebx, ebx
 @@:
      mov dword[esi + ebx], 0
-     shl ebx, 2
+     add ebx, 4
      cmp ebx, ecx
      jne @b
      mov dword[esi], 4
@@ -348,6 +348,40 @@ local Card: DWORD
      ret
 endp
 
+proc SwitchMove uses eax ebx
+     stdcall IsClickedMoveTransferButton
+     .if (eax)
+          mov ax, [CurrPlayerMove]
+          mov bx, [CurrPlayerAttacker]
+          .if (ax = bx)
+               .if (word [CurrPlayerMove] = 1)
+                    mov word [CurrPlayerMove], 2
+                    jmp @f
+               .endif
+               mov word [CurrPlayerMove], 1
+               @@:
+          .endif
+
+          .if (ax <> bx)
+               mov ax, word [CurrPlayerMove]
+               mov [CurrPlayerAttacker], ax
+          .endif
+          @@:
+     .endif
+
+     stdcall IsClickedGrabButton
+     .if (eax)
+          .if (word [CurrPlayerMove] = 1)
+               mov word [CurrPlayerMove], 2
+               jmp @f
+          .endif
+          mov word [CurrPlayerMove], 1
+          @@:
+     .endif
+@@:
+     ret
+endp
+
 proc HandleAttack
      mov byte [IsShownGrabButton], 0 
      mov byte [IsShownOtboyButton], 0 
@@ -359,6 +393,7 @@ proc HandleAttack
           jmp @f
      .endif
      mov esi, Player2Cards
+
 @@:
      stdcall CheckAndPush, GameStack1, esi
      .if (eax = 0)
@@ -375,21 +410,7 @@ proc HandleAttack
           mov byte [IsShownMoveTransferButton], 1
      .endif
 
-     stdcall IsClickedMoveTransferButton
-     .if (eax)
-          mov ax, [CurrPlayerAttacker]
-          .if (ax =  word [CurrPlayerMove])
-               mov byte [IsShownGrabButton], 1
-          .endif
-          .if (ax = 1)
-               mov word [CurrPlayerMove], 2
-               mov word [IsShownMoveTransferButton], 0
-               jmp @f
-          .endif
-          mov word [CurrPlayerMove], 1
-          mov word [IsShownMoveTransferButton], 0
-          jmp @f
-     .endif
+     stdcall SwitchMove
 
      stdcall IsClickedOtboyButton
      .if (eax)
@@ -432,12 +453,14 @@ proc HandleDefence uses esi ebx
           mov esi, Player1Cards
           jmp @f
      .endif
-     mov esi, Player2Cards
 
+     mov esi, Player2Cards
+@@:
      stdcall AllCardsBeaten
      .if (eax)
           mov word [IsShownMoveTransferButton], 1
           mov word [SelectingAttacker], 1
+          jmp canAttack
      .endif
 
      .if (word [IsShownMoveTransferButton] = 0)
@@ -489,6 +512,20 @@ proc HandleDefence uses esi ebx
                pop ebx
           .endif
      .endif
+
+canAttack:
+
+     stdcall SwitchMove
+     stdcall IsClickedMoveTransferButton
+     .if (eax)
+          stdcall ClearStack, GameStack1
+          stdcall ClearStack, GameStack2
+          stdcall ClearStack, GameStack3
+          stdcall ClearStack, GameStack4
+          mov word [IsShownMoveTransferButton], 0
+          jmp @f
+     .endif
+
 @@:    
      ret
 endp

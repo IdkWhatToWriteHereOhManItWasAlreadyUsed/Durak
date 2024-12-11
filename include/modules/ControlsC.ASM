@@ -72,6 +72,28 @@ proc IsClickedMoveTransferButton uses ebx
       ret
 endp
 
+proc IsClickedGrabButton uses ebx
+      xor eax, eax
+      mov ebx, [Event.button.y]
+      .if (ebx > [GrabButtonRect.y])
+            sub ebx, 40
+            .if (ebx < [GrabButtonRect.y])
+                  mov ebx, [Event.button.x]
+                  .if (ebx > [GrabButtonRect.x])
+                        sub ebx, 120
+                        .if (ebx < [GrabButtonRect.x])
+                              .if (word[IsShownGrabButton] = 1)
+                                    mov eax, 1
+                                    jmp @f
+                              .endif
+                        .endif
+                  .endif
+            .endif
+      .endif
+@@:
+      ret
+endp
+
 proc IsClickedOtboyButton uses ebx
       xor eax, eax
       mov ebx, [Event.button.y]

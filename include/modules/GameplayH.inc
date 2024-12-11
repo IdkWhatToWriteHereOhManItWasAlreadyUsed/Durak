@@ -8,7 +8,7 @@ Player2Cards dd 36 dup 0
 
 CurrPlayerMove dw 1
 CurrPlayerAttacker dw 1
-SelectingAttacker dw 1
+SelectingAttacker dw 1 ; for the defense
 SelectedCard dd 0
 Align 4
 
