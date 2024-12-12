@@ -51,6 +51,7 @@ IsOtboyEmpty db 0
 IsShownMoveTransferButton dw 0
 IsShownGrabButton dw 0
 IsShownOtboyButton dw 0
+IsShownSelection dw 0
 align 4
 
 OtboyRect SDL_Rect

@@ -213,21 +213,43 @@ endp
 
 ;----------------------------------DrawSelection-----------------------------------------------------
 
-proc DrawSelection uses ecx, x: DWORD, y: DWORD
-    mov ecx, [x]
-    sub ecx, 10
-    mov [SelectionRect.x], ecx
-    mov ecx, [y]
-    sub ecx, 10
-    mov [SelectionRect.y], ecx
-    cinvoke SDL_RenderCopy, [Renderer], [SelectionTexture], 0, SelectionRect
+proc DrawSelection uses ecx eax ebx
+    .if (word [IsShownSelection] <> 0)
+        stdcall GetSelectionCoords
+        mov ecx, eax
+        sub ecx, 10
+        mov [SelectionRect.x], ecx
+        mov ecx, ebx
+        sub ecx, 10
+        mov [SelectionRect.y], ecx
+        cinvoke SDL_RenderCopy, [Renderer], [SelectionTexture], 0, SelectionRect
+    .endif
     ret
 endp
 
+;----------------------------------GetSelectionCoords-----------------------------------------------------
+
+proc GetSelectionCoords 
+; returns x to eax, y to ebx
+    mov ecx, DISTANCE_BETWEEN_CARDS
+    .while (1)
+        ;  сравнение координат
+        stdcall IsClickInRect, ecx, WINDOW_H - DISTANCE_BETWEEN_CARDS - CARD_H
+        .if (eax = 1)
+            mov eax, ecx
+            mov ebx, WINDOW_H - DISTANCE_BETWEEN_CARDS - CARD_H 
+            jmp @f
+        .endif
+        add ecx, DISTANCE_BETWEEN_CARDS + CARD_W
+        .endif
+    .endw
+@@:
+    ret
+endp
 ;---------------------------------DrawPlayerCards-----------------------------------------------------
 
-proc DrawPlayerCards uses esi eax ebx edi, Player.Cards: DWORD
-    mov esi, [Player.Cards]
+proc DrawPlayerCards uses esi eax ebx edi, PlayerCards: DWORD
+    mov esi, [PlayerCards]
     mov al, 4*9 ; одна страница это 9 карт или 36 байт
     mul byte [CurrCardsPage]
     movzx ebx, ax
@@ -301,11 +323,13 @@ proc DrawScreen, Player: Dword, Enemy: Dword
 
     cinvoke SDL_RenderClear, [Renderer]
     stdcall DrawDeck
+    stdcall DrawSelection
     stdcall DrawOtboy
     stdcall DrawPlayedCards
     stdcall DrawEnemyCards,[Enemy]
     stdcall DrawPlayerCards, [Player]
     stdcall DrawButtons
+    
 @@:
     cinvoke SDL_RenderPresent, [Renderer]
     ret

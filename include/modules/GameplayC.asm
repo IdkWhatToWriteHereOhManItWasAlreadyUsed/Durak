@@ -335,9 +335,7 @@ local Card: DWORD
 
      mov ebx,  DWORD [Card]
      mov eax,  DWORD [Card]
-     shr ebx, 16
-     shl eax, 16
-     mov ax, bx
+     stdcall SwapKostyl
      stdcall PushCard, esi, eax
      stdcall TakeCard, DWORD [PlayerCards], eax
      mov eax, 1 
@@ -446,6 +444,23 @@ proc AllCardsBeaten uses esi ecx
      ret
 endp
 
+proc GiveCardsAfterDefense, PlayerCards: DWORD
+     stdcall GetPlayerCardsAmount, PlayerCards
+     .if (eax < 6)
+          ;while (eax >)
+          .endw
+     .endif   
+     ret
+endp
+
+proc SwapKostyl uses ebx 
+     mov ebx, eax
+     shr ebx, 16
+     shl eax, 16
+     mov ax, bx
+     ret
+endp
+
 proc HandleDefence uses esi ebx
      mov word [IsShownMoveTransferButton], 0
      mov byte [IsShownGrabButton], 1
@@ -463,11 +478,24 @@ proc HandleDefence uses esi ebx
           jmp canAttack
      .endif
 
-     .if (word [IsShownMoveTransferButton] = 0)
+     stdcall GetSelectedCard, esi
+     .if (eax)
+          .if (word [SelectingAttacker] = 0)
+               jmp @f
+          .endif
+     .endif
+
+     .if (eax = 0)
+          mov word [IsShownSelection], 0     
+     .endif
+
+     .if (word [IsShownMoveTransferButton] = 0)   
           .if (word [SelectingAttacker] = 1)
-               stdcall GetSelectedCard, esi
+               stdcall GetSelectedCard, esi 
                .if (eax)
+                    @@:
                     ; drawSelection потом
+                    mov word [IsShownSelection], 1
                     mov DWORD [SelectedCard], eax
                     mov word [SelectingAttacker], 0
                     jmp @f
@@ -479,27 +507,14 @@ proc HandleDefence uses esi ebx
                mov ebx, eax
                stdcall PeekTopCard, eax
                push ebx
-               mov ebx, eax
-               shr ebx, 16
-               shl eax, 16
-               mov ax, bx
+               stdcall SwapKostyl
                stdcall CanBeat, dword [SelectedCard],  eax
                .if (eax)
                     mov eax, dword [SelectedCard]
-                    push ebx
-                    mov ebx, eax
-                    shr ebx, 16
-                    shl eax, 16
-                    mov ax, bx
-                    pop ebx
+                    stdcall SwapKostyl
                     stdcall TakeCard, esi, eax
                     mov eax, dword [SelectedCard]
-                    push ebx
-                    mov ebx, eax
-                    shr ebx, 16
-                    shl eax, 16
-                    mov ax, bx
-                    pop ebx
+                    stdcall SwapKostyl
                     pop ebx
                     stdcall PushCard, ebx, eax
                     stdcall AllCardsBeaten
@@ -507,8 +522,10 @@ proc HandleDefence uses esi ebx
                          mov word [IsShownMoveTransferButton], 1
                     .endif
                     mov word [SelectingAttacker], 1
+                    mov word [IsShownSelection], 0
                     jmp @f
                .endif
+               mov word [SelectingAttacker], 1
                pop ebx
           .endif
      .endif
@@ -522,6 +539,7 @@ canAttack:
           stdcall ClearStack, GameStack2
           stdcall ClearStack, GameStack3
           stdcall ClearStack, GameStack4
+          mov word [IsShownSelection], 0
           mov word [IsShownMoveTransferButton], 0
           jmp @f
      .endif

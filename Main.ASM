@@ -48,9 +48,8 @@ Start:
 proc MainLoop usesdef
 
     stdcall GiveCards
-    .while ([Running] <> 0)
-        stdcall Paint
-        cinvoke SDL_Delay, 50
+    stdcall Paint
+    .while ([Running] <> 0)     
         cinvoke SDL_PollEvent, Event
         .if (eax)
             .if ([Event.type] = SDL_QUIT)
@@ -60,6 +59,7 @@ proc MainLoop usesdef
 
             .if ([Event.type] = SDL_MOUSEBUTTONUP)
                 stdcall MouseButtonUpHandle
+                stdcall Paint
                 jmp EndLoop
             .endif
         .endif
