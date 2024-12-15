@@ -29,6 +29,12 @@ OtboyButtonTexture dd 0
 GrabButtonTexture dd 0
 Temp dd 0
 
+Player1AttackMsg db "Сейчас атакует игрок 1", 0
+
+Player2AttackMsg db "Сейчас атакует игрок 2", 0
+
+Player1DefenceMsg db "Сейчас защищается игрок 1", 0
+Player2DefenceMsg db "Сейчас защищается игрок 2", 0
 
 PlayedCard1 SDL_Rect
 
@@ -52,6 +58,7 @@ IsShownMoveTransferButton dw 0
 IsShownGrabButton dw 0
 IsShownOtboyButton dw 0
 IsShownSelection dw 0
+IsShownScreenBetweenMoves dw 0
 align 4
 
 OtboyRect SDL_Rect

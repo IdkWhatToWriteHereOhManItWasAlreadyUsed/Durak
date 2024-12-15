@@ -21,7 +21,7 @@ ext:
       ret
 endp
 
-proc GetSelectedCard uses esi edi ecx, Player.Cards: DWORD   
+proc GetSelectedCard uses esi edi ecx ebx, Player.Cards: DWORD   
       mov esi, [Player.Cards]
       mov al, 4*9 ; одна страница это 9 карт или 36 байт
       mul byte [CurrCardsPage]
@@ -133,13 +133,22 @@ local count dd 0
       jne @b 
       xor eax, eax
 @@:
-    ret
+      .if (Word [IsShownMoveTransferButton] = 1)
+            .if (Word [IsShownSelection] = 1)
+                  xor eax, eax
+            .endif
+      .endif
+      ret
 endp  
 
 ; Event.Button.x Event.Button.y
 ; click is saved in event struct
 
-proc MouseButtonUpHandle
+proc MouseButtonUpHandle uses
+      .if (word [IsShownScreenBetweenMoves] = 1)
+            mov word [IsShownScreenBetweenMoves], 0
+            jmp @f
+      .endif
       mov ax, [CurrPlayerAttacker]
       .if ([CurrPlayerMove] = ax)
             stdcall HandleAttack

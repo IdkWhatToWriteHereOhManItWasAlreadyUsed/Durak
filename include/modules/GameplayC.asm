@@ -84,6 +84,7 @@ proc PopCard uses esi ebx, Stack: DWORD
      mov ebx, [esi]
      cmp ebx, 4
      je @f
+     sub ebx, 4
      mov eax, [esi + ebx]
      mov dword[esi + ebx], 0
      sub dword [esi], 4
@@ -138,7 +139,7 @@ proc GiveCard uses edi ebx, PlayerCards: DWORD, Card: DWORD
      mov edi, [PlayerCards]
      mov eax, [Card]
      xor ebx, ebx
-     .while (Dword[edi + ebx] = 0)
+     .while (Dword[edi + ebx] <> 0)
           add ebx, 4
      .endw
      mov Dword[edi + ebx], eax
@@ -312,16 +313,41 @@ ex:
      ret
 endp
 
+proc GiveCardsAfterDefense, PlayerCards: DWORD
+     stdcall GetPlayerCardsAmount, PlayerCards
+     .if (eax < 6)
+          ;while (eax >)
+          .endw
+     .endif   
+     ret
+endp
+
+proc SwapKostyl uses ebx
+     mov ebx, eax
+     shr ebx, 16
+     shl eax, 16
+     mov ax, bx
+     ret
+endp
+
+proc GrabCardsFromStack uses ebx edi esi, GameStack: DWORD, PlayerCards: DWORD
+     mov esi, [GameStack]
+     mov edi, [PlayerCards]
+     .while (dword [esi] <> 4)
+          stdcall PopCard, esi
+          stdcall GiveCard, edi, eax
+     .endw
+     ret
+endp
+
 proc CheckAndPush uses esi edi, GameStackAddress: DWORD, PlayerCards: DWORD
 ; returns 0 in eax if not pushed. 1 if pushed
 local Card: DWORD
      mov esi, [GameStackAddress]
      mov edi, [PlayerCards]
      mov eax, [esi]
-     shr eax, 2
-     dec eax
-     test eax, 1h
-     jnz @f
+     cmp eax, 4
+     jne @f
 
      stdcall GetSelectedCard, edi
      cmp eax, 0
@@ -357,7 +383,6 @@ proc SwitchMove uses eax ebx
                     jmp @f
                .endif
                mov word [CurrPlayerMove], 1
-               @@:
           .endif
 
           .if (ax <> bx)
@@ -375,24 +400,26 @@ proc SwitchMove uses eax ebx
           .endif
           mov word [CurrPlayerMove], 1
           @@:
+          mov ax, [CurrPlayerMove]
+          mov [CurrPlayerAttacker], ax
+          mov word [IsShownGrabButton], 0
      .endif
 @@:
+     mov dword [IsShownScreenBetweenMoves], 1
      ret
 endp
 
 proc HandleAttack
-     mov byte [IsShownGrabButton], 0 
-     mov byte [IsShownOtboyButton], 0 
-     .if (Dword [GameStack1] > 8)
-          mov byte [IsShownOtboyButton], 1 
-     .endif
-     .if ([CurrPlayerMove] = 1) 
-          mov esi, Player1Cards
+     stdcall SetPlayerCards
+     mov byte [IsShownGrabButton], 0    
+     stdcall IsClickedMoveTransferButton
+     .if (eax)
+          stdcall SwitchMove
+          mov word [IsShownMoveTransferButton], 0
+          mov word [IsShownGrabButton], 1
           jmp @f
      .endif
-     mov esi, Player2Cards
 
-@@:
      stdcall CheckAndPush, GameStack1, esi
      .if (eax = 0)
           stdcall CheckAndPush, GameStack2, esi     
@@ -407,19 +434,7 @@ proc HandleAttack
      .if (eax <> 0)
           mov byte [IsShownMoveTransferButton], 1
      .endif
-
-     stdcall SwitchMove
-
-     stdcall IsClickedOtboyButton
-     .if (eax)
-          mov ax, [CurrPlayerAttacker]
-          .if (ax = 1)
-               mov word [CurrPlayerMove], 2
-               jmp @f
-          .endif
-          mov word [CurrPlayerMove], 1
-          jmp @f
-     .endif
+   
 @@:
      ret
 endp
@@ -444,26 +459,46 @@ proc AllCardsBeaten uses esi ecx
      ret
 endp
 
-proc GiveCardsAfterDefense, PlayerCards: DWORD
-     stdcall GetPlayerCardsAmount, PlayerCards
-     .if (eax < 6)
-          ;while (eax >)
-          .endw
-     .endif   
+proc GetClickCode uses ebx     
+     stdcall GetSelectedCard, esi
+     .if (eax)
+          mov ebx, 1
+          jmp @f
+     .endif
+
+     stdcall GetSelectedGameStack
+     .if (eax)
+          mov ebx, 2
+          jmp @f
+     .endif
+
+     stdcall IsClickedMoveTransferButton
+     .if (eax)
+          mov ebx, 3
+          jmp @f
+     .endif
+
+     stdcall IsClickedGrabButton
+     .if (eax)
+          mov ebx, 4
+          jmp @f
+     .endif
+
+     .if (ebx <> 3)
+          .if (word [IsShownMoveTransferButton] = 1)
+               xor ebx, ebx
+          .endif
+     .endif
+
+     mov word [IsShownSelection], 0
+     mov word [SelectingAttacker], 1
+     xor ebx, ebx
+@@:
+     mov eax, ebx
      ret
 endp
 
-proc SwapKostyl uses ebx 
-     mov ebx, eax
-     shr ebx, 16
-     shl eax, 16
-     mov ax, bx
-     ret
-endp
-
-proc HandleDefence uses esi ebx
-     mov word [IsShownMoveTransferButton], 0
-     mov byte [IsShownGrabButton], 1
+proc SetPlayerCards
      .if ([CurrPlayerMove] = 1) 
           mov esi, Player1Cards
           jmp @f
@@ -471,83 +506,136 @@ proc HandleDefence uses esi ebx
 
      mov esi, Player2Cards
 @@:
-     stdcall AllCardsBeaten
-     .if (eax)
-          mov word [IsShownMoveTransferButton], 1
-          mov word [SelectingAttacker], 1
-          jmp canAttack
-     .endif
-
-     stdcall GetSelectedCard, esi
-     .if (eax)
-          .if (word [SelectingAttacker] = 0)
-               jmp @f
-          .endif
-     .endif
-
-     .if (eax = 0)
-          mov word [IsShownSelection], 0     
-     .endif
-
-     .if (word [IsShownMoveTransferButton] = 0)   
-          .if (word [SelectingAttacker] = 1)
-               stdcall GetSelectedCard, esi 
-               .if (eax)
-                    @@:
-                    ; drawSelection потом
-                    mov word [IsShownSelection], 1
-                    mov DWORD [SelectedCard], eax
-                    mov word [SelectingAttacker], 0
-                    jmp @f
-               .endif
-          .endif
-
-          stdcall GetSelectedGameStack
-          .if (eax)
-               mov ebx, eax
-               stdcall PeekTopCard, eax
-               push ebx
-               stdcall SwapKostyl
-               stdcall CanBeat, dword [SelectedCard],  eax
-               .if (eax)
-                    mov eax, dword [SelectedCard]
-                    stdcall SwapKostyl
-                    stdcall TakeCard, esi, eax
-                    mov eax, dword [SelectedCard]
-                    stdcall SwapKostyl
-                    pop ebx
-                    stdcall PushCard, ebx, eax
-                    stdcall AllCardsBeaten
-                    .if (eax)
-                         mov word [IsShownMoveTransferButton], 1
-                    .endif
-                    mov word [SelectingAttacker], 1
-                    mov word [IsShownSelection], 0
-                    jmp @f
-               .endif
-               mov word [SelectingAttacker], 1
-               pop ebx
-          .endif
-     .endif
-
-canAttack:
-
-     stdcall SwitchMove
-     stdcall IsClickedMoveTransferButton
-     .if (eax)
-          stdcall ClearStack, GameStack1
-          stdcall ClearStack, GameStack2
-          stdcall ClearStack, GameStack3
-          stdcall ClearStack, GameStack4
-          mov word [IsShownSelection], 0
-          mov word [IsShownMoveTransferButton], 0
-          jmp @f
-     .endif
-
-@@:    
      ret
 endp
 
+;ClickCode
+; 0 - nothing
+; 1 - selectedCard
+; 2 - Attack
+; 3 - moveTransfer
+; 4 - Grab
+
+proc CardChoosing
+     mov word [SelectingAttacker], 1
+     .if (word [IsShownMoveTransferButton] = 1)
+          jmp @f
+     .endif
+     stdcall GetSelectedCard, esi 
+     .if (eax)
+          mov word [IsShownSelection], 1
+          mov DWORD [SelectedCard], eax
+          mov word [SelectingAttacker], 0
+     .endif
+@@:
+     ret
+endp
+
+proc Attacking uses ebx
+local SelectedStack dd ?
+     .if (word [IsShownMoveTransferButton] = 1)
+          jmp @f
+     .endif
+     .if (word [SelectingAttacker] = 1)
+          jmp @f
+     .endif
+     stdcall GetSelectedGameStack
+     .if (eax)
+          mov [SelectedStack], eax
+          .if (dword[eax] <> 8)
+               mov word [IsShownSelection], 0
+               mov word [SelectingAttacker], 1
+               jmp @f
+          .endif
+         
+          stdcall PeekTopCard, eax   
+          stdcall SwapKostyl
+          stdcall CanBeat, dword [SelectedCard],  eax
+          .if (eax)
+               mov eax, dword [SelectedCard]
+               stdcall SwapKostyl
+               stdcall TakeCard, esi, eax
+               mov eax, dword [SelectedCard]
+               stdcall SwapKostyl
+               stdcall PushCard, dword [SelectedStack], eax
+
+               stdcall AllCardsBeaten
+               .if (eax)
+                    mov word [IsShownMoveTransferButton], 1
+                    mov word [IsShownGrabButton], 0     
+                    mov word [IsShownSelection], 0
+               .endif
+          .endif  
+          mov word [IsShownSelection], 0  
+     .endif
+     mov word [SelectingAttacker], 1
+@@:
+     ret
+endp
+
+proc TransferingMove
+     stdcall SwitchMove
+     stdcall ClearStack, GameStack1
+     stdcall ClearStack, GameStack2
+     stdcall ClearStack, GameStack3
+     stdcall ClearStack, GameStack4
+     mov word [IsShownSelection], 0
+     mov word [IsShownMoveTransferButton], 0
+     mov word [IsShownGrabButton], 0
+     ret
+endp
+
+proc Grabbing
+     mov edi, GameStack1
+     .while (edi <> GameStack4 + 29*4)
+          stdcall GrabCardsFromStack, edi, esi
+          add edi, 29*4
+     .endw
+     stdcall SwitchMove
+     mov word [IsShownMoveTransferButton], 0
+     mov word [IsShownSelection], 0
+     mov word [IsShownGrabButton], 0 
+     mov word [SelectingAttacker], 1
+     ret
+endp
+
+proc HandleDefence uses esi ebx
+     stdcall SetPlayerCards
+     stdcall GetClickCode
+
+     .if (eax = 0)
+          mov word [IsShownSelection], 0
+          mov word [SelectingAttacker], 1
+          jmp HandleDefenceExit
+     .endif
+
+     push eax
+     .if (eax = 1)
+          stdcall  CardChoosing       
+     .endif
+     pop eax
+
+     push eax
+     .if (eax = 2)
+          stdcall Attacking       
+     .endif
+     pop eax
+
+     push eax
+     .if (eax = 3)
+          stdcall TransferingMove  
+     .endif
+     pop eax
+     
+     push eax
+     .if (eax = 4)
+          stdcall Grabbing 
+     .endif
+     pop eax
+
+HandleDefenceExit:
+     ret
+endp
 
 
 

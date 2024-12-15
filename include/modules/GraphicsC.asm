@@ -20,6 +20,8 @@ proc Init usesdef
     .endif
 
     cinvoke IMG_Init
+    cinvoke TTF_Init
+
 
     cinvoke SDL_CreateWindow, WINDOW_TITLE, WINDOW_X, WINDOW_Y, WINDOW_W, WINDOW_H, WINDOW_FLAGS
     mov [Window], eax
@@ -112,7 +114,7 @@ endp
 proc DeInit usesdef
     cinvoke SDL_DestroyRenderer, [Renderer]
     cinvoke SDL_DestroyWindow, [Window]
-    ; дописать очистку памяти
+    cinvoke TTF_Quit
     cinvoke IMG_Quit
     cinvoke SDL_Quit
     ret
@@ -241,6 +243,10 @@ proc GetSelectionCoords
             jmp @f
         .endif
         add ecx, DISTANCE_BETWEEN_CARDS + CARD_W
+        .if (ecx > 1000)
+            mov eax, 1000
+            mov ebx, 1000
+            jmp @f
         .endif
     .endw
 @@:
@@ -317,32 +323,54 @@ proc DrawButtons
     ret
 endp
 
+;--------------------------------ShowScreenBetweenMoves-----------------------------------------------
+
+proc ShowScreenBetweenMoves
+    .if (word [CurrPlayerMove] = 1)
+
+        jmp @f
+    .endif
+@@:
+    ret
+endp
 ;--------------------------------DrawScreen-----------------------------------------------
 
 proc DrawScreen, Player: Dword, Enemy: Dword
-
     cinvoke SDL_RenderClear, [Renderer]
-    stdcall DrawDeck
-    stdcall DrawSelection
-    stdcall DrawOtboy
-    stdcall DrawPlayedCards
-    stdcall DrawEnemyCards,[Enemy]
-    stdcall DrawPlayerCards, [Player]
-    stdcall DrawButtons
+    .if (word [IsShownScreenBetweenMoves] = 0)
+        
+        stdcall DrawDeck
+        stdcall DrawSelection
+        stdcall DrawOtboy
+        stdcall DrawPlayedCards
+        stdcall DrawEnemyCards,[Enemy]
+        stdcall DrawPlayerCards, [Player]
+        stdcall DrawButtons
+        jmp @f
+    .endif
     
+    stdcall ShowScreenBetweenMoves
 @@:
     cinvoke SDL_RenderPresent, [Renderer]
+    ret
+endp
+
+proc DrawScreenBetweenMoves
+    
     ret
 endp
 
 ;-----------------------------------Paint-----------------------------------------------
 
 proc Paint
+    .if (word [IsShownScreenBetweenMoves] = 1)
+        stdcall DrawScreenBetweenMoves
+    .endif
     .if ([CurrPlayerMove] = 1)
-            stdcall DrawScreen, Player1Cards, Player2Cards
-            jmp @f
-        .endif
-        stdcall DrawScreen, Player2Cards, Player1Cards
+        stdcall DrawScreen, Player1Cards, Player2Cards
+        jmp @f
+    .endif
+    stdcall DrawScreen, Player2Cards, Player1Cards
 @@: 
     ret
 endp

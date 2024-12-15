@@ -8,6 +8,7 @@ include "D:\FASM\include\api\user32.inc"
 include "include\SDL_structs.inc"
 include "include\SDL_imports.inc"
 include "include\IMG_imports.inc"
+include "include\TTF_imports.inc"
 include "include\Cstd_headers.inc"
 
 section ".data" data readable writeable
@@ -33,38 +34,37 @@ include "include\RandomC.asm"
 
 Start:
     stdcall Init
-
-    ;добавить проверки
     cmp [WasLaunched], 0
     je .Exit
     stdcall MainLoop
-
 
 .Exit:
     stdcall DeInit
     invoke ExitProcess, 0
     ret
 
-proc MainLoop usesdef
-
+proc MainLoop 
     stdcall GiveCards
     stdcall Paint
-    .while ([Running] <> 0)     
+    .while (byte [Running] <> 0)     
+        cinvoke SDL_Delay, 40
         cinvoke SDL_PollEvent, Event
         .if (eax)
             .if ([Event.type] = SDL_QUIT)
                 mov byte [Running], 0
-                jmp EndLoop
+                stdcall DeInit
+                invoke ExitProcess, 0
+                ret
             .endif
 
             .if ([Event.type] = SDL_MOUSEBUTTONUP)
                 stdcall MouseButtonUpHandle
                 stdcall Paint
-                jmp EndLoop
             .endif
         .endif
         EndLoop:
     .endw
+ExitLoop:
     ret
 endp
 
@@ -78,6 +78,7 @@ section ".idata" import data readable writeable
     user32,"user32.dll",\
     sdl,"SDL2.dll",\
     sdl_image,"SDL2_image.dll",\
+    sdl_ttf, "SDL2_ttf.dll",\
     msvcrt, "msvcrt.dll"
 
 
