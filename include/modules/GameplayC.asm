@@ -318,6 +318,10 @@ proc PopCardToPlayer, PlayerCards: DWORD
 ; returns card code if pushed, 0 if not pushed
      stdcall GetPlayerCardsAmount, [PlayerCards]
      .if (eax < 6)  
+          ; for debug
+          .if (dword[Deck] < 8)
+               nop
+          .endif
           stdcall PopCard, Deck
           stdcall GiveCard, [PlayerCards], eax
           mov eax, 1
@@ -359,6 +363,10 @@ proc GrabCardsFromStack uses ebx edi esi, GameStack: DWORD, PlayerCards: DWORD
      mov esi, [GameStack]
      mov edi, [PlayerCards]
      .while (dword [esi] <> 4)
+          ; for debug
+          .if (dword[Deck] < 8)
+               nop
+          .endif
           stdcall PopCard, esi
           stdcall GiveCard, edi, eax
      .endw
