@@ -10,6 +10,7 @@ include "include\SDL_imports.inc"
 include "include\IMG_imports.inc"
 include "include\TTF_imports.inc"
 include "include\Cstd_headers.inc"
+include "include\SDL_keyboard.inc"
 
 section ".data" data readable writeable
 
@@ -47,7 +48,7 @@ proc MainLoop
     stdcall GiveCards
     stdcall Paint
     .while (byte [Running] <> 0)     
-        cinvoke SDL_Delay, 40
+       ; cinvoke SDL_Delay, 40
         cinvoke SDL_PollEvent, Event
         .if (eax)
             .if ([Event.type] = SDL_QUIT)
@@ -59,6 +60,11 @@ proc MainLoop
 
             .if ([Event.type] = SDL_MOUSEBUTTONUP)
                 stdcall MouseButtonUpHandle
+                stdcall Paint
+            .endif
+
+            .if ([Event.type] = SDL_KEYUP)
+                stdcall KeyUpHandle
                 stdcall Paint
             .endif
         .endif

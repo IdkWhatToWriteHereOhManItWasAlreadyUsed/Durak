@@ -432,6 +432,7 @@ proc SwitchMove uses eax ebx
 @@:
      stdcall GiveCardsAfterDefense
      mov dword [IsShownScreenBetweenMoves], 1
+     mov word [CurrCardsPage], 0
      ret
 endp
 
@@ -525,6 +526,7 @@ proc GetClickCode uses ebx
 endp
 
 proc SetPlayerCards
+; returns address of cards of current player to  esi
      .if ([CurrPlayerMove] = 1) 
           mov esi, Player1Cards
           jmp @f
@@ -606,6 +608,7 @@ proc TransferingMove
      stdcall ClearStack, GameStack3
      stdcall ClearStack, GameStack4
      mov word [IsShownSelection], 0
+     mov byte [IsOtboyEmpty], 0
      mov word [IsShownMoveTransferButton], 0
      mov word [IsShownGrabButton], 0
      ret
@@ -658,10 +661,31 @@ proc HandleDefence uses esi ebx
           stdcall Grabbing 
      .endif
      pop eax
-
 HandleDefenceExit:
      ret
 endp
+
+proc IncCardsPage uses esi bx
+     mov word [IsShownSelection], 0
+     stdcall SetPlayerCards
+     stdcall GetPlayerCardsAmount, esi
+     mov bx, 9
+     div bl
+     xor ah, ah
+     .if (ax > word [CurrCardsPage])
+          inc word [CurrCardsPage]
+     .endif
+     ret
+endp
+
+proc DecCardsPage uses esi bx
+     mov word [IsShownSelection], 0
+     .if (word [CurrCardsPage])
+          dec word [CurrCardsPage]
+     .endif
+     ret
+endp
+
 
 
 

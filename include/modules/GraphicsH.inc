@@ -52,7 +52,7 @@ TrumpCardRect SDL_Rect
 
 ; что-то про инструкцию для пользователя
 
-IsOtboyEmpty db 0
+IsOtboyEmpty db 1
 IsShownMoveTransferButton dw 0
 IsShownGrabButton dw 0
 IsShownOtboyButton dw 0
@@ -62,7 +62,7 @@ align 4
 
 OtboyRect SDL_Rect
 DeckRect SDL_Rect
-CurrCardsPage db 0
+CurrCardsPage dw 0
 align 4
 PlayerCardRect SDL_Rect
 CardRect SDL_Rect

@@ -1,3 +1,5 @@
+include "SDL_keyboard.inc"
+
 SDL_FIRSTEVENT      = 0
 
 SDL_QUIT            = 0x100
@@ -25,6 +27,13 @@ struct   SDL_QuitEvent
     timestamp          rd 1
 ends
 
+struct  SDL_Keysym
+       scancode rd 1
+       sym      rd 1
+       mod      rw 1
+       unused   rd 1
+ends
+
 struct SDL_KeyboardEvent
     type      rd 1
     timestamp rd 1
@@ -35,6 +44,8 @@ struct SDL_KeyboardEvent
     padding3  rb 1
     keysym    SDL_Keysym
 ends
+
+
 
 struct SDL_MouseMotionEvent
     type rd 1
@@ -105,3 +116,4 @@ struc   SDL_Event
         .wheel         SDL_MouseWheelEvent
         end virtual
 }
+

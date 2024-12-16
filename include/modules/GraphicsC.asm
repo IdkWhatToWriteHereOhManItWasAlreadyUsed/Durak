@@ -183,7 +183,7 @@ endp
 ;------------------------------DrawOtboy---------------------------------------------------
 
 proc DrawOtboy
-    cmp byte [IsOtboyEmpty], 0
+    cmp byte [IsOtboyEmpty], 1
     je @f
     mov [PlayerCardRect.x], 800 - CARD_W - DISTANCE_BETWEEN_CARDS
     mov [PlayerCardRect.y], 0

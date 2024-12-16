@@ -42,9 +42,3 @@ SDLK_LEFT   = 0x40000050
 SDLK_DOWN   = 0x40000051
 SDLK_UP     = 0x40000052
 
-struct SDL_Keysym
-       scancode rd 1
-       sym      rd 1
-       mod      rw 1
-       unused   rd 1
-ends

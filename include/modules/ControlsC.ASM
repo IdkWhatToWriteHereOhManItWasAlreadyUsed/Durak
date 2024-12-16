@@ -158,3 +158,16 @@ proc MouseButtonUpHandle uses
 @@:
       ret
 endp
+
+proc KeyUpHandle
+      .if(dword [Event.key.keysym.sym] = SDLK_RIGHT)
+            stdcall IncCardsPage
+            jmp @f
+      .endif
+       .if(dword [Event.key.keysym.sym] = SDLK_LEFT)
+            stdcall DecCardsPage
+            jmp @f
+      .endif
+@@:
+      ret
+endp
