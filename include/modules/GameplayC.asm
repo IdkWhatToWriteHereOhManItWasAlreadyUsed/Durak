@@ -671,6 +671,7 @@ proc IncCardsPage uses esi bx
      stdcall GetPlayerCardsAmount, esi
      mov bx, 9
      div bl
+     ; удаляем остаток деления
      xor ah, ah
      .if (ax > word [CurrCardsPage])
           inc word [CurrCardsPage]
