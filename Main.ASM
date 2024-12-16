@@ -29,6 +29,9 @@ Event SDL_Event
 section ".code" code readable executable
 
 include "include\modules\GraphicsC.asm"
+include "include\modules\CardsGiveawayC.asm"
+include "include\modules\GivingAndTakingProcedures.asm"
+include "include\modules\StackProcedures.asm"
 include "include\modules\GameplayC.asm"
 include "include\modules\ControlsC.asm"
 include "include\RandomC.asm"
