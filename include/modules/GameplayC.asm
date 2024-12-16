@@ -216,6 +216,7 @@ proc GetPlayerCardsAmount uses ecx esi, Player: DWORD
      dec ecx
      cmp ecx, 0
      jne @b
+     inc eax
      ret
 endp
 
@@ -313,12 +314,36 @@ ex:
      ret
 endp
 
-proc GiveCardsAfterDefense, PlayerCards: DWORD
-     stdcall GetPlayerCardsAmount, PlayerCards
-     .if (eax < 6)
-          ;while (eax >)
-          .endw
-     .endif   
+proc PopCardToPlayer, PlayerCards: DWORD
+; returns card code if pushed, 0 if not pushed
+     stdcall GetPlayerCardsAmount, [PlayerCards]
+     .if (eax < 6)  
+          stdcall PopCard, Deck
+          stdcall GiveCard, [PlayerCards], eax
+          mov eax, 1
+          jmp @f
+     .endif
+     xor eax, eax
+@@:
+     ret
+endp
+
+proc GiveCardsAfterDefense
+     .while(1)
+          .if (DWORD [Deck] = 4)
+               jmp @f
+          .endif
+          stdcall PopCardToPlayer, Player1Cards
+          .if (DWORD [Deck] = 4)
+               jmp @f
+          .endif
+          stdcall PopCardToPlayer, Player2Cards
+          .if (eax = 0)
+               jmp @f
+          .endif
+     .endw
+
+@@:
      ret
 endp
 
@@ -405,6 +430,7 @@ proc SwitchMove uses eax ebx
           mov word [IsShownGrabButton], 0
      .endif
 @@:
+     stdcall GiveCardsAfterDefense
      mov dword [IsShownScreenBetweenMoves], 1
      ret
 endp

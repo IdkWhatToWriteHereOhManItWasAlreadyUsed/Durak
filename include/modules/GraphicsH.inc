@@ -20,12 +20,11 @@ BackPath db "images\Back.png", 0
 SelectionPath db "images\Selection.png", 0
 MoveTransferButtonPath db "images\MoveTransferButton.png", 0
 GrabButtonPath db "images\GrabButton.png", 0
-OtboyButtonPath db "images\OtboyButton.png", 0
+FontPath db "Durak\fonts\diablo_h.ttf"
 CardsTexture dd 0
 BackTexture dd 0
 SelectionTexture dd 0
 MoveTransferButtonTexture dd 0
-OtboyButtonTexture dd 0
 GrabButtonTexture dd 0
 Temp dd 0
 

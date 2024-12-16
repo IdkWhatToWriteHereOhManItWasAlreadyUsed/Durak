@@ -22,7 +22,6 @@ proc Init usesdef
     cinvoke IMG_Init
     cinvoke TTF_Init
 
-
     cinvoke SDL_CreateWindow, WINDOW_TITLE, WINDOW_X, WINDOW_Y, WINDOW_W, WINDOW_H, WINDOW_FLAGS
     mov [Window], eax
     .if (eax = 0)
@@ -35,6 +34,8 @@ proc Init usesdef
         ret
     .endif
 
+    
+
     cinvoke SDL_SetRenderDrawColor, [Renderer], 12, 93, 27, 1
     stdcall InitImages
     stdcall InitRects
@@ -45,8 +46,7 @@ endp
 ;--------------------------------InitImages-----------------------------------------------------
 
 proc InitImages
-      ;  добавить проверки
-      
+
     cinvoke IMG_LoadTexture, [Renderer], CardsPath
     mov [CardsTexture], eax
 
@@ -61,9 +61,6 @@ proc InitImages
 
     cinvoke IMG_LoadTexture, [Renderer], GrabButtonPath
     mov [GrabButtonTexture], eax
-
-    cinvoke IMG_LoadTexture, [Renderer], OtboyButtonPath
-    mov [OtboyButtonTexture], eax
 
     ret
 endp
