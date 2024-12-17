@@ -14,10 +14,12 @@ include "include\SDL_keyboard.inc"
 
 section ".data" data readable writeable
 
+include "include\modules\NVSignH.inc"
 include "include\modules\GraphicsH.inc"
 include "include\modules\GameplayH.inc"
 include "include\modules\ControlsH.inc"
 include "include\RandomH.inc"
+
 
 
 
@@ -35,6 +37,7 @@ include "include\modules\CardsGiveawayC.asm"
 include "include\modules\StackProcedures.asm"
 include "include\modules\GivingAndTakingProcedures.asm"
 include "include\modules\GameplayC.asm"
+include "include\modules\NVSignC.ASM"
 
 
 Start:
@@ -60,7 +63,7 @@ proc MainLoop
                 stdcall DeInit
                 invoke ExitProcess, 0
                 ret
-            .endif
+            .endif  
 
             .if ([Event.type] = SDL_MOUSEBUTTONUP)
                 stdcall MouseButtonUpHandle

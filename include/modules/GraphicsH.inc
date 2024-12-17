@@ -20,7 +20,8 @@ BackPath db "images\Back.png", 0
 SelectionPath db "images\Selection.png", 0
 MoveTransferButtonPath db "images\MoveTransferButton.png", 0
 GrabButtonPath db "images\GrabButton.png", 0
-FontPath db "Durak\fonts\diablo_h.ttf"
+FontPath db "D:\Дурак\Durak\fonts\diablo_h.ttf", 0
+align 4
 CardsTexture dd 0
 BackTexture dd 0
 SelectionTexture dd 0
@@ -71,4 +72,21 @@ SelectionRect SDL_Rect
 MoveTransferButtonRect SDL_Rect
 GrabButtonRect SDL_Rect
 OtboyButtonRect SDL_Rect
+
+TestSign NVSign
+FontSize dd 0
+TestText db "ASDnsdg lasdg foshge ocrh sge", 0
+FontColor SDL_Color
+align 4
+
+
+
+
+
+CONTROLS_FONT_SIZE  = 33
+CONTROLS_FONT_COLOR = $00AAAAFF
+CONTROLS_TEXT db 'Controls:', 10, 'Arrows - shifting and rotating.', 10, 'Del - restart.', 0
+CONTROLS_X = 520
+CONTROLS_Y = 230
+ControlsSign NVSign
 

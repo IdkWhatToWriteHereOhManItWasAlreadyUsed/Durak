@@ -79,5 +79,18 @@ struct SDL_Surface
     refcount   rd 1
 ends
 
+struct SDL_Font
+    ; в душе не ебу, сколько оно байт, найду методом тыка
+    FT_Face rd 1
+    height rd 1
+    ascent rd 1
+    descent rd 1
+    lineskip rd 1
+    style rd 1
+    outline_val rd 1
+    allow_kerning rd 1
+    other_useless_pizdos rd 20
+ends
+
 include "SDL_keyboard.inc"
 include "SDL_events.inc"

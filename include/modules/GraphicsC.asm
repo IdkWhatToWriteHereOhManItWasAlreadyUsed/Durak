@@ -21,6 +21,9 @@ proc Init usesdef
 
     cinvoke IMG_Init
     cinvoke TTF_Init
+    .if (eax = -1)
+        ret
+    .endif
 
     cinvoke SDL_CreateWindow, WINDOW_TITLE, WINDOW_X, WINDOW_Y, WINDOW_W, WINDOW_H, WINDOW_FLAGS
     mov [Window], eax
@@ -34,12 +37,32 @@ proc Init usesdef
         ret
     .endif
 
-    
 
     cinvoke SDL_SetRenderDrawColor, [Renderer], 12, 93, 27, 1
     stdcall InitImages
     stdcall InitRects
+    stdcall InitFont
     mov [WasLaunched], 1
+    ret
+endp
+
+;---------------------------------InitFont-----------------------------------------------------------
+
+proc InitFont
+    mov [FontColor.r], 246
+    mov [FontColor.g], 246
+    mov [FontColor.b], 246
+    mov [FontColor.a], 1
+    mov dword [FontSize], 20
+    mov [TestSign.rect.x], 20
+    mov [TestSign.rect.y], 20
+    
+    stdcall CreateNVSign, TestSign, TestText, FontPath, FontSize, FontColor
+    stdcall RenderNVSign, TestSign
+    
+
+ ;  stdcall CreateNVSign, ControlsSign, CONTROLS_TEXT, FontPath, CONTROLS_FONT_SIZE, CONTROLS_FONT_COLOR
+  ; stdcall RenderNVSign, ControlsSign
     ret
 endp
 
@@ -80,7 +103,7 @@ proc InitRect uses ebx, Rect: DWORD, x: dword , y: dword, w: dword, h: dword
     ret
 endp
 
-;---------------------------------initRectS-----------------------------------------------------------
+;---------------------------------InitRectS-----------------------------------------------------------
 
 proc InitRects usesdef
     stdcall InitRect, DeckRect, 800 - DISTANCE_BETWEEN_CARDS - CARD_H, GAME_CARDS_Y -2 * DISTANCE_BETWEEN_CARDS, CARD_W, CARD_H
@@ -332,7 +355,9 @@ endp
 proc DrawScreen, Player: Dword, Enemy: Dword
     cinvoke SDL_RenderClear, [Renderer]
     .if (word [IsShownScreenBetweenMoves] = 0)
-        
+        ;stdcall DrawNVSign, TestSign
+        stdcall DrawNVSign, ControlsSign
+
         stdcall DrawDeck
         stdcall DrawSelection
         stdcall DrawOtboy
@@ -351,6 +376,10 @@ endp
 
 proc DrawScreenBetweenMoves
     
+    ret
+endp
+
+proc DrawText
     ret
 endp
 
