@@ -8,37 +8,52 @@
 ;////////////////////////////////////////////////////////////////////
 ;////////////////////////////////////////////////////////////////////
 
-proc CanBeat uses ebx ecx, Attacker: DWORD, Target: DWORD
+proc CanBeat, Attacker: DWORD, Target: DWORD
+local TrumpSuit dd ?
      mov eax, [Trump]
-     mov ebx, eax
-     shr ebx, 16
-     shl eax, 16
-     mov ax, bx
-     mov ebx, [Attacker]
-     mov ecx, [Target]
-     .if (word[Attacker] = ax)
-          .if (word[Target] = ax)
-               .if (bx > cx)
+     mov [TrumpSuit], eax
+     mov eax, [Attacker]
+     stdcall SwapKostyl
+     mov [Attacker], eax
+     mov eax, [Target]
+     stdcall SwapKostyl
+     mov [Target], eax
+     mov ax, word [TrumpSuit]
+     ; если атакуем козырем
+     .if (ax = word [Attacker])
+          ; если цель тоже козырь
+          .if (ax = word [Target])
+               mov ax, word [Target + 2]
+               ; если атакующая карта сильнее
+               .if (word [Attacker + 2] > ax)
                     mov eax, 1
-                    jmp exit
+                    jmp CanBeatExit
                .endif
-               mov eax, 0
-               jmp exit
+               ; иначе
+               xor eax, eax
+               jmp CanBeatExit
           .endif
-          mov eax, 0
-          jmp exit
-    .endif
-    mov eax, [Target]
-    shr eax, 16
-    .if (ax = word[Attacker + 2])
-          .if (bx > cx)
+          ; если цель не козырь
+          mov eax, 1
+          jmp CanBeatExit
+     .endif
+
+     mov ax, word [Target]
+     ; если масти одинаковые
+     .if (ax = word [Attacker])
+          mov ax, word [Target + 2]
+          ; если атакующая карта сильнее
+          .if (word [Attacker + 2] > ax)
                mov eax, 1
-               jmp exit
+               jmp CanBeatExit
           .endif
-          mov eax, 0
-    .endif
-     mov eax, 0
-exit:
+          ; иначе
+          xor eax, eax
+          jmp CanBeatExit
+     .endif
+     ; если разные масти (случай с козырем будет обработан ранее)
+     xor eax, eax    
+CanBeatExit:
      ret
 endp
 
@@ -157,14 +172,6 @@ proc PopCardToPlayer, PlayerCards: DWORD
 ; returns card code if pushed, 0 if not pushed
      stdcall GetPlayerCardsAmount, [PlayerCards]
      .if (eax < 6)  
-          ; for debug
-          .if (dword[Deck] < 8)
-               nop
-               nop
-               nop
-               nop
-               nop
-          .endif
           stdcall PopCard, Deck
           stdcall GiveCard, [PlayerCards], eax
           mov eax, 1
@@ -176,7 +183,8 @@ proc PopCardToPlayer, PlayerCards: DWORD
 endp
 
 proc GiveCardsAfterDefense
-     .while(1)
+local count dw 12
+     .while(word [count])
           .if (DWORD [Deck] = 4)
                jmp @f
           .endif
@@ -185,9 +193,7 @@ proc GiveCardsAfterDefense
                jmp @f
           .endif
           stdcall PopCardToPlayer, Player2Cards
-          .if (eax = 0)
-               jmp @f
-          .endif
+          dec WORD [count]
      .endw
 
 @@:
@@ -227,8 +233,7 @@ local Card: DWORD
      
      mov DWORD [Card], eax
 
-   ;  stdcall CanPush, eax  
-   mov eax, 1
+     stdcall CanPush, eax  
      cmp eax, 0
      je @f
 
@@ -433,8 +438,7 @@ local SelectedStack dd ?
          
           stdcall PeekTopCard, eax   
           stdcall SwapKostyl
-         ; stdcall CanBeat, dword [SelectedCard],  eax
-         mov eax, 1
+          stdcall CanBeat, dword [SelectedCard],  eax
           .if (eax)
                mov eax, dword [SelectedCard]
                stdcall SwapKostyl
