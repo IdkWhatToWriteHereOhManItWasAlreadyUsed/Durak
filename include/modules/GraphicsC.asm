@@ -185,10 +185,7 @@ endp
 proc DrawOtboy
     cmp byte [IsOtboyEmpty], 1
     je @f
-    mov [PlayerCardRect.x], 800 - CARD_W - DISTANCE_BETWEEN_CARDS
-    mov [PlayerCardRect.y], 0
-    mov [PlayerCardRect.h], CARD_H
-    mov [PlayerCardRect.w], CARD_W
+   
     cinvoke SDL_RenderCopy, [Renderer], [BackTexture], 0, OtboyRect
 @@:
     ret
@@ -196,7 +193,7 @@ endp
 
 ;---------------------------------DrawDeck-------------------------------------------------------
 
-proc DrawDeck
+proc DrawDeck uses edx eax
     .if (dword [Deck] > 4)
         stdcall PeekCard, Deck, 0
         movzx edx, ax

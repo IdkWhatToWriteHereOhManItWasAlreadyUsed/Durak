@@ -160,6 +160,10 @@ proc PopCardToPlayer, PlayerCards: DWORD
           ; for debug
           .if (dword[Deck] < 8)
                nop
+               nop
+               nop
+               nop
+               nop
           .endif
           stdcall PopCard, Deck
           stdcall GiveCard, [PlayerCards], eax
@@ -223,7 +227,8 @@ local Card: DWORD
      
      mov DWORD [Card], eax
 
-     stdcall CanPush, eax  
+   ;  stdcall CanPush, eax  
+   mov eax, 1
      cmp eax, 0
      je @f
 
@@ -241,6 +246,10 @@ local Card: DWORD
 endp
 
 proc SwitchMove uses eax ebx
+     mov bx, word [CurrPlayerAttacker]
+     .if (bx <> word [CurrPlayerMove])
+          stdcall GiveCardsAfterDefense
+     .endif
      stdcall IsClickedMoveTransferButton
      .if (eax)
           mov ax, [CurrPlayerMove]
@@ -273,7 +282,6 @@ proc SwitchMove uses eax ebx
           mov word [IsShownGrabButton], 0
      .endif
 @@:
-     stdcall GiveCardsAfterDefense
      mov dword [IsShownScreenBetweenMoves], 1
      mov word [CurrCardsPage], 0
      ret
@@ -312,9 +320,13 @@ endp
 proc AllCardsBeaten uses esi ecx
      mov esi, GameStack1
      mov eax, 1
-@@:
      mov ecx, 4
+@@:
      .if (dword[esi] = 4)
+          .if (esi = GameStack1)
+               xor eax, eax
+               jmp @f
+          .endif   
           jmp @f
      .endif
      .if (dword[esi] <> 12)
@@ -421,7 +433,8 @@ local SelectedStack dd ?
          
           stdcall PeekTopCard, eax   
           stdcall SwapKostyl
-          stdcall CanBeat, dword [SelectedCard],  eax
+         ; stdcall CanBeat, dword [SelectedCard],  eax
+         mov eax, 1
           .if (eax)
                mov eax, dword [SelectedCard]
                stdcall SwapKostyl
