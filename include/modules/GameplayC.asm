@@ -317,6 +317,9 @@ proc HandleAttack
      .if (eax <> 0)
           mov byte [IsShownMoveTransferButton], 1
      .endif
+
+     
+     
    
 @@:
      ret

@@ -57,7 +57,7 @@ proc InitFont
     mov [PlayerAttackMsgSign.rect.x], 120
     mov [PlayerAttackMsgSign.rect.y], 250
 
-    mov [PlayerDefenceMsgSign.rect.x], 100
+    mov [PlayerDefenceMsgSign.rect.x], 85
     mov [PlayerDefenceMsgSign.rect.y], 250
 
     mov [VictoryMsgSign.rect.x], 100
@@ -71,8 +71,6 @@ proc InitFont
 
     stdcall CreateNVSign, VictoryMsgSign, VictoryMsg, FontPath, MsgFontSize, dword [FontColor]
     stdcall RenderNVSign, VictoryMsgSign
-
-    
     ret
 endp
 
@@ -94,7 +92,6 @@ proc InitImages
 
     cinvoke IMG_LoadTexture, [Renderer], GrabButtonPath
     mov [GrabButtonTexture], eax
-
     ret
 endp
 
@@ -129,7 +126,7 @@ proc InitRects usesdef
     stdcall InitRect, EnemyCardRect, 0, 0, CARD_W, CARD_H
     stdcall InitRect, MoveTransferButtonRect, 300, 350, 200, 40
     stdcall InitRect, GrabButtonRect, 600, 350, 120, 40
-    stdcall InitRect, OtboyButtonRect, DISTANCE_BETWEEN_CARDS - 5, 350, 120, 40
+    stdcall InitRect, OtboyButtonRect, DISTANCE_BETWEEN_CARDS, 350, 120, 40
 
 
     mov [CardRect.w], CARD_W
@@ -219,7 +216,7 @@ proc DrawOtboy
     cmp byte [IsOtboyEmpty], 1
     je @f
    
-    cinvoke SDL_RenderCopy, [Renderer], [BackTexture], 0, OtboyRect
+   ; cinvoke SDL_RenderCopy, [Renderer], [BackTexture], 0, OtboyRect
 @@:
     ret
 endp
@@ -350,16 +347,6 @@ proc DrawButtons
     ret
 endp
 
-;--------------------------------ShowScreenBetweenMoves-----------------------------------------------
-
-proc ShowScreenBetweenMoves
-    .if (word [CurrPlayerMove] = 1)
-
-        jmp @f
-    .endif
-@@:
-    ret
-endp
 ;--------------------------------DrawScreen-----------------------------------------------
 
 proc DrawScreen, Player: Dword, Enemy: Dword
@@ -383,17 +370,31 @@ proc DrawScreen, Player: Dword, Enemy: Dword
 endp
 
 proc DrawScreenBetweenMoves
-    mov ax, [CurrPlayerMove]
+    movzx eax, [CurrPlayerMove]
     ; если следующий игрок атакует
     .if (ax = word[CurrPlayerAttacker])
-        mov ax, word[CurrPlayerAttacker]
-        add ax, 49
-        mov byte[PlayerAttackMsg + 42], al
+        cinvoke wsprintf, PlayerAttackMsg, AttackFormat, eax 
         stdcall RenderNVSign, PlayerAttackMsgSign
         stdcall DrawNVSign, PlayerAttackMsgSign
+        jmp @f
     .endif
-
+    ; если следующий игрок защищается
+    cinvoke wsprintf, PlayerDefenceMsg, DefenceFormat, eax 
+    stdcall RenderNVSign, PlayerDefenceMsgSign
+    stdcall DrawNVSign, PlayerDefenceMsgSign
+    jmp @f
 @@: 
+    ret
+endp
+
+proc DrawVictoryScreen
+    movzx eax, [CurrPlayerMove]
+    cinvoke wsprintf, VictoryMsg, VictoryFormat, eax 
+    stdcall RenderNVSign, VictoryMsgSign
+    stdcall DrawNVSign, VictoryMsgSign
+    cinvoke SDL_RenderPresent, [Renderer]
+    cinvoke SDL_Delay, 4000
+    mov byte [Running], 0
     ret
 endp
 
