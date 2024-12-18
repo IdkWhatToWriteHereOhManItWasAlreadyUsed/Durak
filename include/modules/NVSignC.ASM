@@ -28,6 +28,7 @@ local SurfPointer rd 1
      mov ebx, [Sign]
      cinvoke TTF_RenderUTF8_Blended_Wrapped, dword[ebx + NVSign.font],dword [ebx + NVSign.text], dword [ebx + NVSign.color], [ebx + NVSign.wrap_length]
      mov [SurfPointer], eax
+     cinvoke SDL_DestroyTexture, [ebx + NVSign.texture]
      cinvoke SDL_CreateTextureFromSurface, [Renderer], [SurfPointer]
      mov [ebx + NVSign.texture], eax
      cinvoke SDL_FreeSurface, [SurfPointer]

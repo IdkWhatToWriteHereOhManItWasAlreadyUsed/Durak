@@ -49,20 +49,30 @@ endp
 ;---------------------------------InitFont-----------------------------------------------------------
 
 proc InitFont
-    mov [FontColor.r], 0
-    mov [FontColor.g], 0
-    mov [FontColor.b], 0
+    mov [FontColor.r], 255
+    mov [FontColor.g], 255
+    mov [FontColor.b], 255
     mov [FontColor.a], 1
-    mov dword [FontSize], 20
-    mov [TestSign.rect.x], 200
-    mov [TestSign.rect.y], 200
-    
-    stdcall CreateNVSign, TestSign, TestText, FontPath, [FontSize], FontColor
-    stdcall RenderNVSign, TestSign
-    
 
- ;  stdcall CreateNVSign, ControlsSign, CONTROLS_TEXT, FontPath, CONTROLS_FONT_SIZE, CONTROLS_FONT_COLOR
-  ; stdcall RenderNVSign, ControlsSign
+    mov [PlayerAttackMsgSign.rect.x], 120
+    mov [PlayerAttackMsgSign.rect.y], 250
+
+    mov [PlayerDefenceMsgSign.rect.x], 100
+    mov [PlayerDefenceMsgSign.rect.y], 250
+
+    mov [VictoryMsgSign.rect.x], 100
+    mov [VictoryMsgSign.rect.y], 250
+
+    stdcall CreateNVSign, PlayerAttackMsgSign, PlayerAttackMsg, FontPath, MsgFontSize, dword [FontColor]
+    stdcall RenderNVSign, PlayerAttackMsgSign
+
+    stdcall CreateNVSign, PlayerDefenceMsgSign, PlayerDefenceMsg, FontPath, MsgFontSize, dword [FontColor]
+    stdcall RenderNVSign, PlayerDefenceMsgSign
+
+    stdcall CreateNVSign, VictoryMsgSign, VictoryMsg, FontPath, MsgFontSize, dword [FontColor]
+    stdcall RenderNVSign, VictoryMsgSign
+
+    
     ret
 endp
 
@@ -203,7 +213,7 @@ Exit:
     ret
 endp
 
-;------------------------------DrawOtboy---------------------------------------------------
+;---------------------------------DrawOtboy---------------------------------------------------
 
 proc DrawOtboy
     cmp byte [IsOtboyEmpty], 1
@@ -363,18 +373,27 @@ proc DrawScreen, Player: Dword, Enemy: Dword
         stdcall DrawEnemyCards,[Enemy]
         stdcall DrawPlayerCards, [Player]
         stdcall DrawButtons
-        stdcall DrawNVSign, TestSign
         jmp @f
     .endif
     
-    stdcall ShowScreenBetweenMoves
+    stdcall DrawScreenBetweenMoves
 @@:
     cinvoke SDL_RenderPresent, [Renderer]
     ret
 endp
 
 proc DrawScreenBetweenMoves
-    
+    mov ax, [CurrPlayerMove]
+    ; если следующий игрок атакует
+    .if (ax = word[CurrPlayerAttacker])
+        mov ax, word[CurrPlayerAttacker]
+        add ax, 49
+        mov byte[PlayerAttackMsg + 42], al
+        stdcall RenderNVSign, PlayerAttackMsgSign
+        stdcall DrawNVSign, PlayerAttackMsgSign
+    .endif
+
+@@: 
     ret
 endp
 

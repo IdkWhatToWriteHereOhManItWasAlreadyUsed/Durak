@@ -20,7 +20,7 @@ BackPath db "images\Back.png", 0
 SelectionPath db "images\Selection.png", 0
 MoveTransferButtonPath db "images\MoveTransferButton.png", 0
 GrabButtonPath db "images\GrabButton.png", 0
-FontPath db "D:\Дурак\Durak\fonts\diablo_h.ttf", 0
+FontPath db "D:\Дурак\Durak\fonts\Consolas.ttf", 0
 align 4
 CardsTexture dd 0
 BackTexture dd 0
@@ -29,12 +29,6 @@ MoveTransferButtonTexture dd 0
 GrabButtonTexture dd 0
 Temp dd 0
 
-Player1AttackMsg db "Сейчас атакует игрок 1", 0
-
-Player2AttackMsg db "Сейчас атакует игрок 2", 0
-
-Player1DefenceMsg db "Сейчас защищается игрок 1", 0
-Player2DefenceMsg db "Сейчас защищается игрок 2", 0
 
 PlayedCard1 SDL_Rect
 
@@ -73,10 +67,27 @@ MoveTransferButtonRect SDL_Rect
 GrabButtonRect SDL_Rect
 OtboyButtonRect SDL_Rect
 
-TestSign NVSign
-FontSize dd 0
-TestText db "ASDnsdg lasdg foshge ocrh sge", 0
+
 FontColor SDL_Color
+MsgFontSize = 45
+ButtonFontSize = 30
+
+TestSign  NVSign
+
+PlayerAttackMsgSign NVSign
+PlayerDefenceMsgSign NVSign
+VictoryMsgSign NVSign
+
+
+
+PlayerAttackMsg db  "Сейчас атакует игрок      ", 0
+PlayerDefenceMsg db "Сейчас защищается игрок      ", 0
+VictoryMsg db       "Победил игрок      ", 0
+
+GrabButtonText db "Сак дик1", 0
+
+
+
 align 4
 
 
