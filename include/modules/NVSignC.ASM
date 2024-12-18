@@ -1,4 +1,4 @@
-proc CreateNVSign uses ebx, Sign : DWord, TextPtr : DWord, .FontPath : DWord, FontSize : DWord, Color : DWord
+proc CreateNVSign uses ebx, Sign : DWord, TextPtr : DWord, .FontPath : DWord, .FontSize : DWord, Color : DWord
      mov ebx, [Sign]
 
      mov eax, [TextPtr]
@@ -7,7 +7,7 @@ proc CreateNVSign uses ebx, Sign : DWord, TextPtr : DWord, .FontPath : DWord, Fo
      mov eax, [Color]
      mov [ebx + NVSign.color], eax
 
-     cinvoke TTF_OpenFont, [.FontPath], [FontSize]
+     cinvoke TTF_OpenFont, [.FontPath], [.FontSize]
      mov [ebx + NVSign.font], eax
 
      mov [ebx + NVSign.texture], 0
@@ -22,8 +22,6 @@ proc DestroyNVSign uses ebx, Sign : DWord
      cinvoke TTF_CloseFont, [ebx + NVSign.font]
      ret
 endp
-
-TempText db 0
 
 proc RenderNVSign uses ebx, Sign : DWord
 local SurfPointer rd 1

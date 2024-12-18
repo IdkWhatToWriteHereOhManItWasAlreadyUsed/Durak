@@ -80,13 +80,3 @@ FontColor SDL_Color
 align 4
 
 
-
-
-
-CONTROLS_FONT_SIZE  = 33
-CONTROLS_FONT_COLOR = $00AAAAFF
-CONTROLS_TEXT db 'Controls:', 10, 'Arrows - shifting and rotating.', 10, 'Del - restart.', 0
-CONTROLS_X = 520
-CONTROLS_Y = 230
-ControlsSign NVSign
-

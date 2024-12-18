@@ -49,15 +49,15 @@ endp
 ;---------------------------------InitFont-----------------------------------------------------------
 
 proc InitFont
-    mov [FontColor.r], 246
-    mov [FontColor.g], 246
-    mov [FontColor.b], 246
+    mov [FontColor.r], 0
+    mov [FontColor.g], 0
+    mov [FontColor.b], 0
     mov [FontColor.a], 1
     mov dword [FontSize], 20
-    mov [TestSign.rect.x], 20
-    mov [TestSign.rect.y], 20
+    mov [TestSign.rect.x], 200
+    mov [TestSign.rect.y], 200
     
-    stdcall CreateNVSign, TestSign, TestText, FontPath, FontSize, FontColor
+    stdcall CreateNVSign, TestSign, TestText, FontPath, [FontSize], FontColor
     stdcall RenderNVSign, TestSign
     
 
@@ -355,8 +355,6 @@ endp
 proc DrawScreen, Player: Dword, Enemy: Dword
     cinvoke SDL_RenderClear, [Renderer]
     .if (word [IsShownScreenBetweenMoves] = 0)
-        ;stdcall DrawNVSign, TestSign
-        stdcall DrawNVSign, ControlsSign
 
         stdcall DrawDeck
         stdcall DrawSelection
@@ -365,6 +363,7 @@ proc DrawScreen, Player: Dword, Enemy: Dword
         stdcall DrawEnemyCards,[Enemy]
         stdcall DrawPlayerCards, [Player]
         stdcall DrawButtons
+        stdcall DrawNVSign, TestSign
         jmp @f
     .endif
     
