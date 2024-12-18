@@ -54,16 +54,19 @@ local TrumpSuit dd ?
      ; если разные масти (случай с козырем будет обработан ранее)
      xor eax, eax    
 CanBeatExit:
+     
      ret
 endp
 
 proc GetPlayerCardsAmount uses ecx esi, Player: DWORD
+local IsNoCards dw 1
      xor eax, eax
      mov ecx, 35
      mov esi, [Player]
 @@:
      shl ecx, 2
      .if (DWORD [esi + ecx] <> 0) 
+          mov word[IsNoCards], 0
           inc eax 
      .endif
      shr ecx, 2
@@ -165,6 +168,7 @@ proc CanPush uses ecx esi ebx, Card: DWORD
 HasEmptyStackOrCanPush:
      mov eax, 1
 ex:
+
      ret
 endp
 
@@ -250,7 +254,32 @@ local Card: DWORD
      ret
 endp
 
+proc IsGameFinished
+     stdcall GetPlayerCardsAmount, Player1Cards
+     dec eax
+     ; если у 1 игрока есть карты
+     .if (eax)
+          stdcall GetPlayerCardsAmount, Player2Cards
+          dec eax
+          ; если у 2 игрока есть карты
+          .if (eax)
+               xor eax, eax
+               jmp @f
+          .endif  
+          ; если нет карт 
+     .endif
+     ; если у 1 игрока нет карт
+     mov eax, 1
+@@:
+     ret
+endp
+
 proc SwitchMove uses eax ebx
+     stdcall IsGameFinished
+     .if (eax)
+          mov word [IsShownVictoryScreen], 1
+          jmp SwitchMoveExit
+     .endif
      mov bx, word [CurrPlayerAttacker]
      .if (bx <> word [CurrPlayerMove])
           stdcall GiveCardsAfterDefense
@@ -289,6 +318,7 @@ proc SwitchMove uses eax ebx
 @@:
      mov dword [IsShownScreenBetweenMoves], 1
      mov word [CurrCardsPage], 0
+SwitchMoveExit:
      ret
 endp
 

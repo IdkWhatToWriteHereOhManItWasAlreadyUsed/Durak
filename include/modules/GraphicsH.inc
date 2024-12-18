@@ -1,5 +1,5 @@
 Window dd 0
-WINDOW_TITLE db 'Слово дурака: чушпан на асфальте', 0
+WINDOW_TITLE db 'Слово дурака: чушпан на асфальте v.1.0.0', 0
 align 4
 WINDOW_W = 800
 WINDOW_H = 600
@@ -53,6 +53,7 @@ IsShownGrabButton dw 0
 IsShownOtboyButton dw 0
 IsShownSelection dw 0
 IsShownScreenBetweenMoves dw 0
+IsShownVictoryScreen dw 0
 align 4
 
 OtboyRect SDL_Rect

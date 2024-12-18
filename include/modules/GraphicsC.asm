@@ -60,7 +60,7 @@ proc InitFont
     mov [PlayerDefenceMsgSign.rect.x], 85
     mov [PlayerDefenceMsgSign.rect.y], 250
 
-    mov [VictoryMsgSign.rect.x], 100
+    mov [VictoryMsgSign.rect.x], 140
     mov [VictoryMsgSign.rect.y], 250
 
     stdcall CreateNVSign, PlayerAttackMsgSign, PlayerAttackMsg, FontPath, MsgFontSize, dword [FontColor]
@@ -351,6 +351,10 @@ endp
 
 proc DrawScreen, Player: Dword, Enemy: Dword
     cinvoke SDL_RenderClear, [Renderer]
+    .if (word [IsShownVictoryScreen])
+        stdcall DrawVictoryScreen
+        jmp @f
+    .endif
     .if (word [IsShownScreenBetweenMoves] = 0)
 
         stdcall DrawDeck
@@ -393,7 +397,7 @@ proc DrawVictoryScreen
     stdcall RenderNVSign, VictoryMsgSign
     stdcall DrawNVSign, VictoryMsgSign
     cinvoke SDL_RenderPresent, [Renderer]
-    cinvoke SDL_Delay, 4000
+    cinvoke SDL_Delay, 6000
     mov byte [Running], 0
     ret
 endp
