@@ -88,9 +88,6 @@ PlayerAttackMsg db  "Сейчас атакует игрок      ", 0
 PlayerDefenceMsg db "Сейчас защищается игрок      ", 0
 VictoryMsg db       "Победил игрок      ", 0
 
-GrabButtonText db "Я сак дик!      ", 0
-
-
 
 align 4
 

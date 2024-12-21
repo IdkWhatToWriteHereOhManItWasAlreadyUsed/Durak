@@ -55,7 +55,7 @@ proc MainLoop
     stdcall GiveCards
     stdcall Paint
     .while (byte [Running] <> 0)     
-       ; cinvoke SDL_Delay, 40
+        cinvoke SDL_Delay, 40
         cinvoke SDL_PollEvent, Event
         .if (eax)
             .if ([Event.type] = SDL_QUIT)

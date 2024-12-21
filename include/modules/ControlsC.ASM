@@ -22,27 +22,43 @@ ext:
 endp
 
 proc GetSelectedCard uses esi edi ecx ebx, Player.Cards: DWORD   
+      ; загружаем в esi адрес массива карт игрока
       mov esi, [Player.Cards]
+      ; загружаем в al размер одной страницы капт
       mov al, 4*9 ; одна страница это 9 карт или 36 байт
+      ; умножаем значение al на номер текущей страницы
+      ; получаем смещение текущей страницы карт от начала массива
       mul byte [CurrCardsPage]
       movzx ebx, ax
+      ; загружаем в ecx вертикальную координату первой карты
       mov ecx, DISTANCE_BETWEEN_CARDS
+      ; обнуляем eax
       xor eax, eax
+      ; проходим по массивку карт
       .while (DWORD [esi+ebx] <> 0)
+            ; загружаем в edi карту 
             movzx edi, word [esi + ebx] 
             shl edi, 16
             mov di, word [esi + ebx + 2] 
-            ;  сравнение координат
+            ; проверяем, нажал ли игрок на карту с текущей координатой
             stdcall IsClickInRect, ecx, WINDOW_H - DISTANCE_BETWEEN_CARDS - CARD_H
+            ; если нажал на карту с текущей координатой
             .if (eax = 1)
+                  ; возвращаем код карты в eax
                   mov eax, edi
+                  ; выходим из функции
                   jmp @f
             .endif
+            ; увеличиваем координату до координаты следующей карты
             add ecx, DISTANCE_BETWEEN_CARDS + CARD_W
+            ; увеличиваем значение адреса, по которому будет читаться карта
             add ebx, 4
-
+            ; если вышли за границы экрана
+            ; это произойдет в случае, если за текущей страницей еще есть картф
             .if (ecx > WINDOW_W - DISTANCE_BETWEEN_CARDS - CARD_W)
-            jmp @f
+                  ; выходим из функции
+                  ; возвращаем 0, который уже был задан в eax
+                  jmp @f
             .endif
 
       .endw

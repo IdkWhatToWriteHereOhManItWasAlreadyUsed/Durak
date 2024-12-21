@@ -9,7 +9,9 @@
 ;////////////////////////////////////////////////////////////////////
 
 proc CanBeat, Attacker: DWORD, Target: DWORD
+     ; обьявляем локальную переменную переменную, которая хранит козырную масть
 local TrumpSuit dd ?
+     ; загружаем козырную масть в локальную переменную
      mov eax, [Trump]
      mov [TrumpSuit], eax
      mov eax, [Attacker]
@@ -18,6 +20,7 @@ local TrumpSuit dd ?
      mov eax, [Target]
      stdcall SwapKostyl
      mov [Target], eax
+     ; загружаем в ax козырную масть
      mov ax, word [TrumpSuit]
      ; если атакуем козырем
      .if (ax = word [Attacker])

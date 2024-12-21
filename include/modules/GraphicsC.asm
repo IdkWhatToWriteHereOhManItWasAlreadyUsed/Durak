@@ -149,30 +149,27 @@ endp
 
 ;----------------------------------DrawCard----------------------------------------------
 
-proc DrawCard uses ecx, x: DWORD, y: DWORD, CardType, CardNum
-
-    push eax
+proc DrawCard uses ecx eax, x: DWORD, y: DWORD, CardType, CardNum
+    ; преобразовывем масть и силу карты в номер строки и столбца на картинке со всеми картами
     sub [CardNum], 6
     dec [CardType]
-
+    ; вычисляем горизонтальную координату прямоугольника на картинке со всеми картами
     mov ax, CARD_W
-    mul [CardNum]
+    mul [CardNum]   
     mov [CardRect.x], eax
-
+    ; вычисляем вертикальную координату прямоугольника на картинке со всеми картами
     mov ax,  CARD_H
     mul [CardType]
     mov [CardRect.y], eax
-
+    ; задаём координаты текущей карты на экране
     mov eax, [x]
     mov [PlayerCardRect.x], eax
     mov eax, [y]
     mov [PlayerCardRect.y], eax
-
+    ; переносим карту на рендерер для того, чтобы она отобразилась на экране
     cinvoke SDL_RenderCopy, [Renderer], [CardsTexture], CardRect, PlayerCardRect
 
-    pop eax
     ret
-
 endp
 
 ;---------------------------------DrawEnemyCards-----------------------------------------------
@@ -224,14 +221,20 @@ endp
 ;---------------------------------DrawDeck-------------------------------------------------------
 
 proc DrawDeck uses edx eax
+    ; если первое двойное слово в колоде больше 4
+    ; а значит, в колоде  есть карты
     .if (dword [Deck] > 4)
+        ; находим самую нижнюю карту в колоде
         stdcall PeekCard, Deck, 0
+        ; разбиваем полученный код карты на 2 двойных слова
         movzx edx, ax
         shr eax, 16
+        ; выполняем отрисовку карты
         stdcall DrawCard, [TrumpCardRect.x], [TrumpCardRect.y],  edx, eax
     .endif
-
+    ; если в колоде больше 1 карты
     .if (dword [Deck] > 8)
+        ; рисуем рубашку
         cinvoke SDL_RenderCopy, [Renderer], [BackTexture], 0, DeckRect
     .endif
     ret
@@ -240,8 +243,11 @@ endp
 ;----------------------------------DrawSelection-----------------------------------------------------
 
 proc DrawSelection uses ecx eax ebx
+    ; если в данный момент нужно отобразить выделение
     .if (word [IsShownSelection] <> 0)
+        ; получаем координаты, на которых нужно отобразить выделение
         stdcall GetSelectionCoords
+        ; задаём координаты вы
         mov ecx, eax
         sub ecx, 10
         mov [SelectionRect.x], ecx
