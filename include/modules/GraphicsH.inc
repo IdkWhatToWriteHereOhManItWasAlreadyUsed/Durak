@@ -1,7 +1,7 @@
 Window dd 0
 WINDOW_TITLE db 'Слово дурака: чушпан на асфальте v.1.0.0', 0
 align 4
-WINDOW_W = 800
+WINDOW_W = 800 
 WINDOW_H = 600
 WINDOW_X = 100
 WINDOW_Y = 60
